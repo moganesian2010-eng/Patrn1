@@ -119,7 +119,7 @@
     .qr-video{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#080f21;border:1px solid var(--line);border-radius:var(--r1)}
     .qr-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:var(--s4) 0}
     .qr-controls button{padding-inline:var(--s2)}
-    .qr-status{min-height:2.8em;margin:0;color:var(--muted);font-size:12px}
+    .qr-status{min-height:2.8em;margin:var(--s2) 0;color:var(--muted);font-size:12px}
   </style>
 </head>
 <body>
@@ -580,13 +580,13 @@ Apache License
     function qrScannerModal(){
       openModal('Оплатить по QR',`
         <p class="modal-subtitle">Наведи камеру на QR-код СБП или выбери фото.</p>
+        <p id="qr-status" class="qr-status" role="status">После сканирования проверь сумму и подтверди учебную оплату.</p>
         <video id="qr-video" class="qr-video" playsinline muted hidden></video>
         <div class="qr-controls">
           <button class="primary" id="qr-camera" type="button">Включить камеру</button>
           <button class="primary secondary" id="qr-choose" type="button">Выбрать фото</button>
         </div>
-        <input id="qr-file" type="file" accept="image/*" hidden>
-        <p id="qr-status" class="qr-status" role="status">После сканирования проверь сумму и подтверди учебную оплату.</p>`);
+        <input id="qr-file" type="file" accept="image/*" hidden>`);
       const video = $('#qr-video');
       const camera = $('#qr-camera');
       const fileInput = $('#qr-file');
@@ -605,6 +605,7 @@ Apache License
         video.srcObject = null;
         video.hidden = true;
         camera.disabled = false;
+        camera.textContent = 'Включить камеру';
       }
       function isCurrent(id){
         return id===attempt && video.isConnected && $('#modal').open;
@@ -623,20 +624,27 @@ Apache License
         return jsQR(frame.data,frame.width,frame.height);
       }
       function acceptQr(result){
-        stopCamera();
         const payment = readPaymentQr(result.data);
         if(!payment){
-          status.textContent = 'Код распознан. Для оплаты нужен QR-код СБП в рублях.';
-          return;
+          const message = 'Код распознан, но этот формат не поддерживается. Наведи камеру на QR-код СБП в рублях или выбери другое фото.';
+          if(status.textContent!==message)status.textContent = message;
+          return false;
         }
         if(!state.cards.some(card=>!card.frozen)){
-          status.textContent = 'Разморозьте одну из карт и повторите сканирование.';
-          return;
+          const message = 'QR-код СБП распознан. Для демо-оплаты нужна активная карта.';
+          if(status.textContent!==message)status.textContent = message;
+          return false;
         }
         qrPaymentModal(payment);
+        return true;
       }
 
       camera.onclick = async()=>{
+        if(stream){
+          stopCamera();
+          status.textContent = 'Камера выключена. Можно включить её снова или выбрать фото.';
+          return;
+        }
         if(!navigator.mediaDevices?.getUserMedia){
           status.textContent = 'Камера недоступна. Выбери фото с QR-кодом.';
           return;
@@ -657,6 +665,8 @@ Apache License
           await video.play();
           if(!isCurrent(id))return;
           status.textContent = 'Помести QR-код в кадр.';
+          camera.textContent = 'Выключить камеру';
+          camera.disabled = false;
           const scanFrame = ()=>{
             if(!isCurrent(id))return;
             if(!stream.active){
@@ -665,8 +675,8 @@ Apache License
               return;
             }
             const result = video.readyState>=2 && scan(video,video.videoWidth,video.videoHeight,800);
-            if(result)acceptQr(result);
-            else timer = setTimeout(scanFrame,180);
+            if(result&&acceptQr(result))return;
+            timer = setTimeout(scanFrame,180);
           };
           scanFrame();
         }catch{

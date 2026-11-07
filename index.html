@@ -54,6 +54,41 @@
     .settings-choices button.active{border-color:#0297de99;background:#0297de22;color:var(--accent-light);font-weight:600}.chart-mode-description{font-size:11px;line-height:1.7;color:var(--muted);margin:var(--s3) 0 0}.chart-tools{justify-content:space-between}.chart-kind{font-size:10px;color:var(--muted);white-space:nowrap}.inline-chart.advanced{position:relative}.inline-chart.advanced>.big-chart{width:calc(100% - 60px);height:255px}.advanced-price-axis{position:absolute;right:0;top:0;width:57px;height:100%;pointer-events:none}.advanced-price-axis span{position:absolute;right:0;transform:translateY(-50%);font-size:9px;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}.advanced-price-axis .last-price{color:#b6e6ff;background:#123b56;border:1px solid #0297de55;border-radius:4px;padding:2px 3px;font-size:9px}.volume-label{position:absolute;left:3px;top:80%;font-size:8px;color:var(--muted);pointer-events:none}.candle-crosshair{position:absolute;top:0;height:100%;width:0;border-left:1px dashed #a1aec680;pointer-events:none}.candle-readout{position:absolute;left:4px;top:4px;z-index:2;width:calc(100% - 68px);max-width:360px;padding:8px;border:1px solid #40516d;border-radius:8px;background:#0a1430ed;pointer-events:none;color:var(--muted);font-size:9px;line-height:1.5}.candle-readout>strong{font-size:10px;color:var(--text);font-weight:500}.candle-readout>div{display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;margin:4px 0}.candle-readout span{display:flex;justify-content:space-between;gap:4px}.candle-readout b{font-weight:500;color:var(--text);font-variant-numeric:tabular-nums}.candle-readout small{font-size:9px}
     @media(min-width:600px){.inline-chart.advanced>.big-chart{height:310px}.advanced-price-axis span,.candle-readout,.candle-readout small{font-size:11px}.candle-readout>strong{font-size:12px}.chart-kind{font-size:12px}}
     .inline-chart.advanced+.chart-axis{padding-right:60px}
+    .terminal-chart{
+      --terminal-bg:#10151f;--terminal-grid:#252c38;--terminal-accent:#f7b955;
+      padding:0;border-radius:var(--r1);background:var(--terminal-bg);border-color:var(--terminal-grid);
+    }
+    .terminal-quote{
+      display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);
+      align-items:center;gap:var(--s3);padding:var(--s4);
+    }
+    .terminal-quote .detail-price{font-size:clamp(23px,6vw,38px);line-height:1.15;font-weight:650;letter-spacing:-.025em;margin:3px 0;overflow-wrap:anywhere}
+    .terminal-quote .detail-price small{font-size:.38em;letter-spacing:.03em}
+    .terminal-quote dl{display:grid;gap:5px;margin:0;font-size:11px}
+    .terminal-quote dl>div{display:flex;justify-content:space-between;gap:var(--s1);flex-wrap:wrap}
+    .terminal-quote dt{color:var(--muted)}
+    .terminal-quote dd{margin:0;font-variant-numeric:tabular-nums}
+    .terminal-chart .chart-tools{justify-content:flex-start;margin:0;padding:0 var(--s4);border-block:1px solid var(--terminal-grid)}
+    .terminal-chart .periods{margin:0}
+    .terminal-chart .periods button{min-width:44px;min-height:44px;border-radius:0}
+    .terminal-chart .periods button.active{background:transparent;color:var(--terminal-accent);box-shadow:inset 0 -2px var(--terminal-accent)}
+    .terminal-chart .inline-chart{margin:var(--s2) var(--s2) 0}
+    .terminal-chart .inline-chart.advanced>.big-chart{width:calc(100% - 68px);height:clamp(265px,43vh,410px)}
+    .terminal-chart .advanced-price-axis{width:65px;border-left:1px solid var(--terminal-grid)}
+    .terminal-chart .advanced-price-axis span{padding-right:var(--s1);font-size:10px}
+    .terminal-chart .advanced-price-axis .last-price{background:#314052;border:0;color:var(--text)}
+    .terminal-chart .chart-axis{margin:var(--s2) var(--s2) 0;padding:0 68px var(--s2) 0}
+    .terminal-chart .volume-label{top:80%;font-size:9px;background:var(--terminal-bg);padding:0 3px}
+    .terminal-indicators{display:flex;align-items:center;gap:var(--s3);padding:0 var(--s4);border-block:1px solid var(--terminal-grid);color:var(--muted);font-size:11px}
+    .terminal-indicators button{min-height:44px;min-width:48px;padding:0 4px;border:0;background:transparent;color:var(--muted);font-weight:600}
+    .terminal-indicators button[aria-pressed="true"]{color:var(--terminal-accent)}
+    .terminal-chart.sma-hidden .sma-line{display:none}
+    .terminal-chart .trade-buttons{margin:0;padding:var(--s3) var(--s4)}
+    .terminal-chart .trade-buttons button{border-radius:999px;color:#081510;background:#5ed7b0}
+    .terminal-chart .trade-buttons .secondary{background:#ff8a96;color:#260a10;border:0}
+    .terminal-chart .trade-buttons button:hover:not(:disabled){filter:brightness(1.1)}
+    .terminal-chart .chart-info{margin:0;padding:0 var(--s4) var(--s3);border:0}
+    .terminal-chart .chart-info .icon{width:15px;height:15px}
   </style>
 </head>
 <body>
@@ -156,11 +191,12 @@
       let axis=ticks.map(t=>`<span style="top:${t.y/280*100}%">${chartPrice(t.value,c)}</span>`).join('');
       const currentY=priceY(c.price),showCurrent=currentY>=12&&currentY<=202;
       if(showCurrent)axis+=`<span class="last-price" style="top:${currentY/280*100}%">${chartPrice(c.price,c)}</span>`;
-      const svg=`<defs><clipPath id="${clip}"><rect x="0" y="0" width="800" height="218"/></clipPath><clipPath id="${clip}-volume"><rect x="0" y="228" width="800" height="52"/></clipPath></defs>${ticks.map(t=>`<path d="M0 ${t.y}H800" stroke="#24314d" stroke-dasharray="4 6"/>`).join('')}<path d="M0 228H800" stroke="#24314d"/><g clip-path="url(#${clip}-volume)">${volumes}</g><g clip-path="url(#${clip})">${candles}<polyline class="sma-line" points="${average.join(' ')}" fill="none" stroke="#55c4fc" stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>${showCurrent?`<path d="M0 ${currentY}H800" stroke="#55c4fc" stroke-opacity=".45" stroke-dasharray="4 5"/>`:''}</g>`;
+      const columns = [160,320,480,640].map(x=>`<path d="M${x} 12V274" stroke="#252c38"/>`).join('');
+      const svg=`<defs><clipPath id="${clip}"><rect x="0" y="0" width="800" height="218"/></clipPath><clipPath id="${clip}-volume"><rect x="0" y="228" width="800" height="52"/></clipPath></defs>${columns}${ticks.map(t=>`<path d="M0 ${t.y}H800" stroke="#252c38"/>`).join('')}<path d="M0 228H800" stroke="#24314d"/><g clip-path="url(#${clip}-volume)">${volumes}</g><g clip-path="url(#${clip})">${candles}<polyline class="sma-line" points="${average.join(' ')}" fill="none" stroke="#f7b955" stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>${showCurrent?`<path d="M0 ${currentY}H800" stroke="#55c4fc" stroke-opacity=".45" stroke-dasharray="4 5"/>`:''}</g>`;
       return {svg,axis};
     }
     function candleTimeLabel(p,index){const f=Math.min(1,Math.max(0,index/47));if(p==='1Д'){const minutes=Math.round(f*1439);return `${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;}if(p==='1Н')return ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][Math.min(6,Math.floor(f*7))];if(p==='1М')return `${1+Math.round(f*29)} дн.`;return ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'][Math.min(11,Math.floor(f*12))];}
-    function advancedChart(c,p){const m=candleMarkup(c,p);return `<svg class="big-chart advanced-candles" viewBox="0 0 800 280" preserveAspectRatio="none" role="img" aria-label="Демонстрационные свечи ${c.name}, ${p}. Бирюзовая линия — SMA 7, внизу — объёмы.">${m.svg}</svg><div class="advanced-price-axis" aria-hidden="true">${m.axis}</div><span class="volume-label" aria-hidden="true">Объём</span><div class="candle-crosshair" hidden></div><div class="candle-readout" role="status" hidden></div>`;}
+    function advancedChart(c,p){const m=candleMarkup(c,p);return `<svg class="big-chart advanced-candles" viewBox="0 0 800 280" preserveAspectRatio="none" role="img" aria-label="Демонстрационные свечи ${c.name}, ${p}. Внизу показаны объёмы.">${m.svg}</svg><div class="advanced-price-axis" aria-hidden="true">${m.axis}</div><span class="volume-label" aria-hidden="true">Объём</span><div class="candle-crosshair" hidden></div><div class="candle-readout" role="status" hidden></div>`;}
     function chart(c,p='1Н',large=false){
       if(large&&state.chartMode==='advanced')return advancedChart(c,p);
       const values=chartData(c,p),min=Math.min(...values)-8,max=Math.max(...values)+8,w=large?800:120,h=large?280:40;
@@ -175,7 +211,79 @@
     function renderAccounts(){const total=state.cards.reduce((sum,c)=>sum+c.balance,0);$('#total-balance').innerHTML=state.hide?'••• •••':`${number(state.currency==='USD'?total/100/USD_RATE:total/100)} <span>${state.currency==='USD'?'$':'₽'}</span>`;$$('[data-currency]').forEach(b=>{const active=b.dataset.currency===state.currency;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});$('#eye-button').innerHTML=icon(state.hide?'eye-off':'eye');$('#eye-button').setAttribute('aria-label',state.hide?'Показать баланс':'Скрыть баланс');$('#cards').innerHTML=state.cards.map(c=>`<button class="account-row ${c.frozen?'frozen':''}" data-card="${esc(c.id)}" aria-label="Карта ${esc(c.bank)}, заканчивается на ${c.last}"><img class="card-thumbnail" src="${cardImage(c)}" alt="Демо-карта ${esc(c.bank)}" width="72" height="46"><span class="account-label"><span class="account-bank">${esc(c.bank)}</span><span class="account-number">${c.frozen?'Заморожена':'•• '+c.last}</span></span><span class="account-amount">${money(c.balance)}</span>${icon('chevron','account-chevron')}</button>`).join('');$('#transactions').innerHTML=state.transactions.slice(0,historyExpanded?undefined:4).map(transactionHtml).join('')||'<div class="empty">Здесь появятся ваши операции</div>';const historyButton=$('[data-action="history"]');historyButton.setAttribute('aria-expanded',String(historyExpanded));historyButton.innerHTML=`${historyExpanded?'Свернуть':'Развернуть'} <span aria-hidden="true">${historyExpanded?'↑':'↓'}</span>`;}
     function transactionHtml(t){const amount=state.hide?'•••':t.amount===0?'Между счетами':`${t.amount>0?'+':''}${money(t.amount,false)}`;return `<div class="transaction"><span class="tx-icon ${t.amount>0?'up':''}">${icon(['bag','plus','crypto','swap','arrow'].includes(t.kind)?t.kind:'arrow')}</span><div class="tx-info"><div class="tx-name">${esc(t.name)}</div><div class="tx-date">${new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(t.date)}</div></div><div class="tx-amount ${t.amount>0?'up':''}">${amount}<small>${esc(t.detail)}</small></div></div>`;}
     function renderMarket(){const total=coins.reduce((s,c)=>s+coinValue(c),0);$('#portfolio-value').textContent=money(total);const toggle=$('#favorites-toggle');toggle.classList.toggle('active',favoritesOnly);toggle.setAttribute('aria-pressed',String(favoritesOnly));toggle.setAttribute('aria-label',favoritesOnly?'Показать все монеты':'Показать избранные монеты');let list=coins.filter(c=>!favoritesOnly||state.favorites.includes(c.id));$('#favorites-empty').hidden=list.length>0;if(sortDirection)list.sort((a,b)=>(b.change-a.change)*sortDirection);$('#sort-change').textContent=`24 ч. ${sortDirection===1?'↓':sortDirection===-1?'↑':'↕'}`;$('#market-body').innerHTML=list.map(c=>`<tr data-coin="${c.id}"><td class="rank muted">${coins.indexOf(c)+1}</td><td><button class="coin-open" data-coin="${c.id}">${coinIcon(c)}<span><span class="coin-name">${c.name}</span><span class="coin-symbol" style="display:block">${c.symbol}</span></span></button></td><td class="right">${dollar(c.price)}</td><td class="right table-change ${c.change>=0?'up':'down'}">${change(c)}</td><td class="chart-column right">${chart(c)}</td><td class="holding-column right">${state.hide?'•••':quantity(state.holdings[c.id]||0)}<span class="coin-symbol" style="display:block">${money(coinValue(c))}</span></td><td><button class="favorite ${state.favorites.includes(c.id)?'selected':''}" data-favorite="${c.id}" aria-label="${state.favorites.includes(c.id)?'Убрать':'Добавить'} ${c.name} ${state.favorites.includes(c.id)?'из избранного':'в избранное'}" aria-pressed="${state.favorites.includes(c.id)}">${icon('star')}</button></td></tr>`).join('');}
-    function renderDetail(){const c=coins.find(c=>c.id===currentCoin),held=state.holdings[c.id]||0;const axis={'1Д':['00:00','06:00','12:00','18:00','23:59'],'1Н':['Пн','Вт','Чт','Пт','Вс'],'1М':['1-я нед.','2-я нед.','3-я нед.','4-я нед.'],'1Г':['Янв','Апр','Июл','Окт','Дек']}[period];$('#detail-page').innerHTML=`<div class="coin-detail-header">${coinIcon(c)}<div><h1>${c.name} <span class="muted" style="font-size:16px;letter-spacing:0">${c.symbol}</span></h1><span class="muted small">Учебный рынок</span></div><button class="favorite ${state.favorites.includes(c.id)?'selected':''}" style="margin-left:auto" data-favorite="${c.id}" aria-label="${state.favorites.includes(c.id)?'Убрать из избранного':'Добавить в избранное'}" aria-pressed="${state.favorites.includes(c.id)}">${icon('star')}</button></div><div class="detail-grid"><div><div class="panel"><div class="muted small">Цена ${c.symbol}</div><div class="detail-price">${dollar(c.price)}</div><span class="${c.change>=0?'up':'down'} small">${change(c)} <span class="muted">за 24 часа</span></span><div class="chart-tools"><span class="chart-kind">${state.chartMode==='advanced'?'Свечи · SMA 7':'Линия'}</span><div class="periods" role="group" aria-label="Период графика">${['1Д','1Н','1М','1Г'].map(p=>`<button data-period="${p}" class="${period===p?'active':''}" aria-pressed="${period===p}">${p}</button>`).join('')}</div></div><div class="inline-chart ${state.chartMode==='advanced'?'advanced':''}" id="inline-chart" tabindex="0" role="group" aria-label="График: масштабируйте двумя пальцами, колесом с Ctrl или клавишами плюс и минус">${chart(c,period,true)}</div><div class="chart-axis">${axis.map(x=>`<span>${x}</span>`).join('')}</div><div class="chart-info">${icon('help')} <span>Учебный график. Стоимость сделки рассчитывается по демо-цене выше.</span></div></div></div><div><div class="panel"><h2>Ваши ${c.symbol}</h2><div style="font-size:30px;letter-spacing:-.8px;margin:20px 0 4px">${state.hide?'•••':quantity(held)} <span class="muted" style="font-size:16px">${c.symbol}</span></div><div class="muted small">≈ ${money(coinValue(c))}</div><div class="trade-buttons"><button class="primary" data-trade="buy">Купить</button><button class="primary secondary" data-trade="sell" ${held<=0?'disabled':''}>Продать</button></div></div><div class="panel" style="margin-top:24px"><h3>О монете</h3><div class="detail-stats"><span>Капитализация</span>${c.cap}</div><div class="detail-stats"><span>Демо-курс доллара</span>${number(USD_RATE)} ₽</div><div class="detail-stats"><span>Комиссия демо</span>0 ₽</div></div></div></div>`;setupInlineChart($('#inline-chart'));}
+    function terminalQuote(coin){
+      const day = candleSeries(coin,'1Д');
+      const high = Math.max(...day.map(candle=>candle.high));
+      const low = Math.min(...day.map(candle=>candle.low));
+      const turnover = day.reduce((total,candle)=>total+candle.volume*candle.close,0);
+      const compact = new Intl.NumberFormat('ru-RU',{notation:'compact',maximumFractionDigits:2});
+      const direction = coin.change>=0 ? 'up' : 'down';
+      return `<div class="terminal-quote">
+        <div><div class="muted small">Последняя цена</div><div class="detail-price ${direction}">${chartPrice(coin.price,coin)} <small>USD</small></div><span class="${direction} small">${change(coin)} <span class="muted">за 24 ч.</span></span></div>
+        <dl aria-label="Демо-данные за 24 часа">
+          <div><dt>Макс. 24 ч.</dt><dd>${chartPrice(high,coin)}</dd></div>
+          <div><dt>Мин. 24 ч.</dt><dd>${chartPrice(low,coin)}</dd></div>
+          <div><dt>Оборот, $</dt><dd>${compact.format(turnover)}</dd></div>
+        </dl>
+      </div>`;
+    }
+
+    let showSma = true;
+    function renderDetail(){
+      const c = coins.find(coin=>coin.id===currentCoin);
+      const held = state.holdings[c.id]||0;
+      const advanced = state.chartMode==='advanced';
+      const favorite = state.favorites.includes(c.id);
+      const axis = {'1Д':['00:00','06:00','12:00','18:00','23:59'],'1Н':['Пн','Вт','Чт','Пт','Вс'],'1М':['1-я нед.','2-я нед.','3-я нед.','4-я нед.'],'1Г':['Янв','Апр','Июл','Окт','Дек']}[period];
+      const tradeButtons = `<div class="trade-buttons"><button class="primary" data-trade="buy">Купить</button><button class="primary secondary" data-trade="sell" ${held<=0?'disabled':''}>Продать</button></div>`;
+      const quote = advanced ? terminalQuote(c) : `<div class="muted small">Цена ${c.symbol}</div><div class="detail-price">${dollar(c.price)}</div><span class="${c.change>=0?'up':'down'} small">${change(c)} <span class="muted">за 24 часа</span></span>`;
+      $('#detail-page').innerHTML = `
+        <div class="coin-detail-header">
+          ${coinIcon(c)}
+          <div>
+            <h1>${advanced ? c.symbol+'/USD' : `${c.name} <span class="muted" style="font-size:16px;letter-spacing:0">${c.symbol}</span>`}</h1>
+            <span class="muted small">${advanced ? c.name+' · Учебный рынок' : 'Учебный рынок'}</span>
+          </div>
+          <button class="favorite ${favorite?'selected':''}" style="margin-left:auto" data-favorite="${c.id}" aria-label="${favorite?'Убрать из избранного':'Добавить в избранное'}" aria-pressed="${favorite}">${icon('star')}</button>
+        </div>
+        <div class="detail-grid">
+          <div>
+            <div class="panel ${advanced?`terminal-chart ${showSma?'':'sma-hidden'}`:''}">
+              ${quote}
+              <div class="chart-tools">
+                ${advanced?'':'<span class="chart-kind">Линия</span>'}
+                <div class="periods" role="group" aria-label="Период графика">
+                  ${['1Д','1Н','1М','1Г'].map(p=>`<button data-period="${p}" class="${period===p?'active':''}" aria-pressed="${period===p}">${p}</button>`).join('')}
+                </div>
+              </div>
+              <div class="inline-chart ${advanced?'advanced':''}" id="inline-chart" tabindex="0" role="group" aria-label="График: масштабируйте двумя пальцами, колесом с Ctrl или клавишами плюс и минус">${chart(c,period,true)}</div>
+              <div class="chart-axis">${axis.map(x=>`<span>${x}</span>`).join('')}</div>
+              ${advanced?`<div class="terminal-indicators"><span>Индикаторы</span><button type="button" id="terminal-sma" aria-pressed="${showSma}">SMA 7</button></div>${tradeButtons}`:''}
+              <div class="chart-info">${icon('help')} <span>Учебный график. Стоимость сделки рассчитывается по демо-цене выше.</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="panel">
+              <h2>Ваши ${c.symbol}</h2>
+              <div style="font-size:30px;letter-spacing:-.8px;margin:20px 0 4px">${state.hide?'•••':quantity(held)} <span class="muted" style="font-size:16px">${c.symbol}</span></div>
+              <div class="muted small">≈ ${money(coinValue(c))}</div>
+              ${advanced?'':tradeButtons}
+            </div>
+            <div class="panel" style="margin-top:24px">
+              <h3>О монете</h3>
+              <div class="detail-stats"><span>Капитализация</span>${c.cap}</div>
+              <div class="detail-stats"><span>Демо-курс доллара</span>${number(USD_RATE)} ₽</div>
+              <div class="detail-stats"><span>Комиссия демо</span>0 ₽</div>
+            </div>
+          </div>
+        </div>`;
+      setupInlineChart($('#inline-chart'));
+      if(advanced)$('#terminal-sma').onclick = event=>{
+        showSma = !showSma;
+        event.currentTarget.setAttribute('aria-pressed',String(showSma));
+        $('.terminal-chart').classList.toggle('sma-hidden',!showSma);
+      };
+    }
     function render(){const hour=new Date().getHours();$('#greeting').textContent=`${hour<5?'Доброй ночи':hour<12?'Доброе утро':hour<18?'Добрый день':'Добрый вечер'}, ${state.name}`;$('#today').textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',weekday:'long'}).format(new Date());renderAccounts();renderMarket();if(currentPage==='detail')renderDetail();}
     function navigate(page,coin){currentPage=page;const detail=page==='detail';$('.main').classList.toggle('coin-view',detail);$('.main').classList.toggle('crypto-view',page!=='accounts');$('#detail-back').hidden=!detail;const balance=$('#crypto-balance-bar');if(page!=='accounts')$('.topbar').insertBefore(balance,$('.top-actions'));else $('.main').insertBefore(balance,$('#accounts-page'));if(coin){currentCoin=coin;period='1Н';}$('#accounts-page').hidden=page!=='accounts';$('#crypto-page').hidden=page!=='crypto';$('#detail-page').hidden=page!=='detail';$('.mobile-nav').style.setProperty('--nav-index',page==='accounts'?'0':'1');$('#crypto-balance-bar').hidden=page==='accounts';$('#favorites-toggle').hidden=page!=='crypto';$('.mobile-brand').hidden=page!=='accounts';$('.breadcrumb').hidden=page!=='accounts';$('#breadcrumb-current').textContent=page==='accounts'?'Счета':page==='detail'?`Crypto / ${coins.find(c=>c.id===currentCoin).name}`:'Crypto';$$('[data-page]').filter(b=>b.classList.contains('nav-btn')).forEach(b=>{const active=b.dataset.page===(page==='detail'?'crypto':page);b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});render();window.scrollTo({top:0,behavior:'instant'});resetMobileNav();}
     function toast(message){clearTimeout(toastTimer);$('#toast').textContent=message;$('#toast').classList.add('show');toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),4500);}

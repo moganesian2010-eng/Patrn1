@@ -222,9 +222,6 @@
     .entry-cells span:first-child{border-radius:12px 4px 4px 12px}
     .entry-cells span:last-child{border-radius:4px 12px 12px 4px}
     .entry-cells .filled::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent-light)}
-    .entry-clear{color:var(--text);border-color:transparent}
-    .entry-clear:hover{background:#55c4fc26}
-    .entry-clear svg{width:20px;height:20px}
     .entry-feedback{margin:var(--s2) 0 0;color:var(--text);font-size:12px}
     #entry-error{min-height:1.5em}
     .entry-keypad{
@@ -287,8 +284,14 @@
     .card-page-actions{display:grid;gap:var(--s2);margin:0 0 var(--s5)}
     .card-page-actions .text-btn{justify-self:center}
     .card-expenses h2{margin-bottom:var(--s3)}
-    .entry-clear{width:44px;background:#55c4fc24;border:1px solid #55c4fc45;border-radius:14px;touch-action:none}
-    .entry-clear:active:not(:disabled){background:#55c4fc45}
+    .entry-clear{
+      flex-shrink:0;width:44px;height:44px;padding:0;
+      border:1px solid #55c4fc70;border-radius:12px;background:#55c4fc30;color:var(--text);
+      touch-action:none;
+    }
+    .entry-clear .icon{width:25px;height:25px;stroke-width:1.9}
+    .entry-clear:disabled{opacity:.7}
+    .entry-clear:hover:not(:disabled),.entry-clear:active:not(:disabled){background:#55c4fc55}
     #entry-device{gap:3px;color:var(--accent-light);touch-action:none}
     #entry-device span{font-size:11px;font-weight:600}
   </style>
@@ -340,7 +343,7 @@
             <input id="entry-pin" type="password" inputmode="none" maxlength="4" autocomplete="off" pattern="[0-9]{4}" aria-describedby="entry-error" required>
             <div class="entry-cells" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
           </div>
-          <button class="icon-btn entry-clear" id="entry-clear" type="button" aria-label="Стереть цифру" disabled><svg class="icon" aria-hidden="true"><path d="M8 5h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-6-7 6-7Zm4 4 6 6m0-6-6 6"/></svg></button>
+          <button class="icon-btn entry-clear" id="entry-clear" type="button" aria-label="Стереть цифру" disabled><svg class="icon" viewBox="0 0 40 32" aria-hidden="true"><path d="M15.6 2.3h17.2A6.2 6.2 0 0 1 39 8.5v15a6.2 6.2 0 0 1-6.2 6.2H15.6a7 7 0 0 1-5.3-2.4L1.9 18a3 3 0 0 1 0-4l8.4-9.3a7 7 0 0 1 5.3-2.4Z"/><path d="m19.2 11.3 9.4 9.4m0-9.4-9.4 9.4"/></svg></button>
         </div>
         <p class="entry-feedback" id="entry-error" role="alert"></p>
         <button id="entry-submit" type="submit" hidden>Продолжить</button>
@@ -440,7 +443,7 @@
             <span class="settings-item-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
             <h3 id="security-heading">Вход</h3>
           </div>
-          <button class="primary secondary full" id="security-device" type="button" hidden>Подключить Face ID или устройство</button>
+          <button class="primary secondary full" id="security-device" type="button" aria-describedby="security-device-status">Подключить Face ID или устройство</button>
           <p class="small muted" id="security-device-status" role="status"></p>
           <button class="text-btn" id="security-lock" type="button">Заблокировать Patrn</button>
         </section>
@@ -1282,7 +1285,8 @@ Apache License
     const securityDevice = $('#security-device');
     const securityStatus = $('#security-device-status');
     let lockRecord = loadLock();
-    let platformAvailable = false;
+    const deviceAuthSupported = location.protocol==='https:'&&window.top===window
+      &&Boolean(window.PublicKeyCredential&&navigator.credentials?.create&&navigator.credentials?.get);
     let deviceRequest = null;
     let pendingPin = null;
 
@@ -1316,11 +1320,12 @@ Apache License
       $('#entry-name').textContent = state.name;
       $('#entry-label').textContent = lockRecord ? 'Введите пароль' : pendingPin===null ? 'Придумайте код из 4 цифр' : 'Повторите код';
       paintPin();
-      securityDevice.hidden = !platformAvailable;
       securityDevice.textContent = lockRecord?.passkey ? 'Отключить вход устройством' : 'Подключить Face ID или устройство';
-      securityStatus.textContent = !platformAvailable
-        ? 'Вход устройством доступен на совместимом устройстве на сайте Patrn.'
-        : lockRecord?.passkey ? 'Вход с подтверждением на устройстве подключён.' : 'Для входа устройством браузер предложит системное подтверждение.';
+      securityStatus.textContent = lockRecord?.passkey
+        ? 'Вход с подтверждением на устройстве подключён.'
+        : deviceAuthSupported
+          ? 'Браузер предложит сохранить ключ доступа и подтвердить его на устройстве.'
+          : 'Чтобы подключить Face ID на iPhone, откройте опубликованный сайт Patrn напрямую в Safari.';
     }
     async function unlockPatrn(){
       if(entry.hidden||entry.classList.contains('entry-unlocking'))return;
@@ -1387,7 +1392,7 @@ Apache License
       entryHelpText.hidden = !entryHelpText.hidden;
       entryHelp.setAttribute('aria-expanded',String(!entryHelpText.hidden));
       entryHelpText.textContent = lockRecord
-        ? (lockRecord.passkey&&platformAvailable ? 'Попробуйте войти с Face ID или подтверждением устройства.' : 'Введите код, который вы создали в этом браузере.')
+        ? (lockRecord.passkey&&deviceAuthSupported ? 'Попробуйте войти с Face ID или подтверждением устройства.' : 'Введите код, который вы создали в этом браузере.')
         : 'Придумайте четыре цифры и введите их ещё раз.';
     };
     entryForm.onsubmit = async event=>{
@@ -1496,6 +1501,10 @@ Apache License
           renderEntry();
           return;
         }
+        if(!deviceAuthSupported){
+          securityStatus.textContent = 'Откройте опубликованный сайт Patrn напрямую в Safari на iPhone и нажмите эту кнопку снова.';
+          return;
+        }
         const user = crypto.getRandomValues(new Uint8Array(16));
         const challenge = crypto.getRandomValues(new Uint8Array(32));
         const credential = await navigator.credentials.create({publicKey:{
@@ -1506,22 +1515,26 @@ Apache License
           attestation:'none',timeout:60000,
         }});
         const response = credential?.response;
-        const key = response?.getPublicKey();
-        if(!key||response.getPublicKeyAlgorithm()!==-7||!validClientData(response.clientDataJSON,'webauthn.create',challenge))throw new Error('Invalid device registration');
+        const key = response?.getPublicKey?.();
+        if(!key||response.getPublicKeyAlgorithm?.()!==-7||!validClientData(response.clientDataJSON,'webauthn.create',challenge))throw new Error('Invalid device registration');
         saveLock({...lockRecord,passkey:{id:encodeBytes(credential.rawId),key:encodeBytes(key),user:encodeBytes(user)}});
         renderEntry();
       }catch{
-        securityStatus.textContent = 'Не удалось изменить вход устройством. Вход по коду доступен.';
+        securityStatus.textContent = 'Настройка ключа доступа не завершилась. Проверьте настройки ключей доступа в браузере или войдите по PIN.';
       }finally{
         securityDevice.disabled = false;
       }
     };
     entryDevice.onclick = async()=>{
       if(deviceRequest||entrySubmit.disabled)return;
-      if(!platformAvailable||!lockRecord?.passkey){
-        entryError.textContent = platformAvailable
-          ? 'Сначала войдите по PIN и подключите Face ID в профиле.'
-          : 'Face ID доступен на совместимом устройстве на сайте Patrn. Здесь можно войти по PIN.';
+      if(!lockRecord){
+        entryError.textContent = 'Сначала создайте PIN. После входа настройка Face ID находится в разделе «Профиль → Вход».';
+        return;
+      }
+      if(!deviceAuthSupported||!lockRecord.passkey){
+        entryError.textContent = deviceAuthSupported
+          ? 'Сначала войдите по PIN и подключите Face ID в разделе «Профиль → Вход».'
+          : 'Браузер не предоставил доступ к ключам входа. На iPhone откройте сайт Patrn напрямую в Safari или войдите по PIN.';
         return;
       }
       const request = new AbortController();
@@ -1547,12 +1560,6 @@ Apache License
       }
     };
     renderEntry();
-    if(location.protocol==='https:'&&window.top===window&&typeof AuthenticatorAttestationResponse!=='undefined'&&typeof AuthenticatorAttestationResponse.prototype.getPublicKey==='function'&&window.PublicKeyCredential?.isUserVerifyingPlatformAuthenticatorAvailable){
-      PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(available=>{
-        platformAvailable = available;
-        renderEntry();
-      }).catch(()=>{});
-    }
     $('#close-modal').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target===$('#modal')){const r=$('#modal').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();}});$('#transaction-search').addEventListener('input',renderTransactionSearch);$('#market-search').addEventListener('input',renderMarket);$('#sort-change').onclick=()=>{sortDirection=sortDirection===1?-1:1;renderMarket();};render();save();
   </script>
 </body>

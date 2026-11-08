@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <meta name="theme-color" content="#0A1430">
   <meta name="description" content="Patrn — ваши счета и криптовалюта в одном простом интерфейсе. Интерактивная демонстрация.">
   <title>Patrn</title>
@@ -272,6 +272,10 @@
     .security-settings .settings-chart-label{margin:0}
     .security-settings p{margin:0}
     .security-settings .text-btn{text-align:left;padding:0}
+    html,body,.entry-lock,dialog{touch-action:pan-x pan-y}
+    @media (pointer:coarse){
+      .field input,.field select,.field textarea{font-size:16px}
+    }
   </style>
 </head>
 <body>
@@ -648,6 +652,12 @@ Apache License
   </script>
   <script>
     'use strict';
+    for(const gesture of ['gesturestart','gesturechange']){
+      document.addEventListener(gesture,event=>event.preventDefault(),{passive:false});
+    }
+    document.addEventListener('wheel',event=>{
+      if(event.ctrlKey||event.metaKey)event.preventDefault();
+    },{passive:false});
     const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
     const brandLogo = $('link[rel="icon"]').href;
     for(const image of $$('[data-brand-logo]'))image.src = brandLogo;

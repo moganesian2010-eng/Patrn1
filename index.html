@@ -276,6 +276,21 @@
     @media (pointer:coarse){
       .field input,.field select,.field textarea{font-size:16px}
     }
+    .card-view .topbar{position:relative;justify-content:center;margin-bottom:var(--s4)}
+    #card-back{position:absolute;left:0}
+    #card-title{margin:0 48px;text-align:center;font-size:20px;line-height:1.2}
+    #card-page{max-width:600px;margin-inline:auto}
+    .card-page-visual{width:min(100%,350px);margin-inline:auto}
+    .card-page-visual .bank-card{cursor:default}
+    .card-page-visual .bank-card:hover{transform:none}
+    .card-page-balance{text-align:center;margin:var(--s5) 0}
+    .card-page-actions{display:grid;gap:var(--s2);margin:0 0 var(--s5)}
+    .card-page-actions .text-btn{justify-self:center}
+    .card-expenses h2{margin-bottom:var(--s3)}
+    .entry-clear{width:44px;background:#55c4fc24;border:1px solid #55c4fc45;border-radius:14px;touch-action:none}
+    .entry-clear:active:not(:disabled){background:#55c4fc45}
+    #entry-device{gap:3px;color:var(--accent-light);touch-action:none}
+    #entry-device span{font-size:11px;font-weight:600}
   </style>
 </head>
 <body>
@@ -325,7 +340,7 @@
             <input id="entry-pin" type="password" inputmode="none" maxlength="4" autocomplete="off" pattern="[0-9]{4}" aria-describedby="entry-error" required>
             <div class="entry-cells" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
           </div>
-          <button class="icon-btn entry-clear" id="entry-clear" type="button" aria-label="Стереть цифру" hidden><svg class="icon" aria-hidden="true"><path d="M8 5h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-6-7 6-7Zm4 4 6 6m0-6-6 6"/></svg></button>
+          <button class="icon-btn entry-clear" id="entry-clear" type="button" aria-label="Стереть цифру" disabled><svg class="icon" aria-hidden="true"><path d="M8 5h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-6-7 6-7Zm4 4 6 6m0-6-6 6"/></svg></button>
         </div>
         <p class="entry-feedback" id="entry-error" role="alert"></p>
         <button id="entry-submit" type="submit" hidden>Продолжить</button>
@@ -343,8 +358,9 @@
         <button class="entry-key" type="button" data-pin-digit="9">9<small aria-hidden="true">ьэюя</small></button>
         <button class="entry-tool" id="entry-help" type="button" aria-expanded="false" aria-controls="entry-help-text">Не могу<br>войти</button>
         <button class="entry-key" type="button" data-pin-digit="0">0</button>
-        <button class="entry-tool" id="entry-device" type="button" aria-label="Войти через Face ID или устройство" hidden>
+        <button class="entry-tool" id="entry-device" type="button" aria-label="Войти через Face ID или устройство">
           <svg class="icon" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M8 9v1m8-1v1m-4-1v4m-3 2c1.5 1.5 4.5 1.5 6 0"/></svg>
+          <span>Face ID</span>
         </button>
       </div>
     </div>
@@ -360,7 +376,7 @@
     <div class="sidebar-bottom"><button class="support-btn" data-action="help"><svg class="icon"><use href="#i-help"/></svg><span>Всё просто<small>Поможем разобраться</small></span></button><div class="sidebar-demo"><span class="status-line"><i class="status-dot"></i>Демонстрационный банк</span>Изучайте возможности.<br>Все деньги здесь виртуальные.</div></div>
   </aside>
   <main class="main accounts-view">
-    <header class="topbar between"><button class="detail-back" id="detail-back" data-page="crypto" aria-label="Вернуться к списку монет" title="Все монеты" hidden><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg></button><button class="icon-btn favorites-toggle" id="favorites-toggle" data-action="favorites-filter" aria-label="Показать избранные монеты" aria-pressed="false" title="Избранное" hidden><svg class="icon"><use href="#i-star"/></svg></button><div class="breadcrumb">Личный кабинет <span style="color:#53627d">/</span> <span id="breadcrumb-current" style="color:#e2e9f4">Счета</span></div><span class="header-mark" id="header-mark" aria-label="Patrn">P</span><label class="search transaction-search" id="transaction-search-field"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input type="search" id="transaction-search" aria-label="Поиск по операциям" aria-controls="transaction-search-results" placeholder="Поиск по операциям" autocomplete="off"></label><h1 class="profile-title" id="profile-heading" hidden>Профиль</h1><h1 class="coin-chart-title" id="coin-chart-title" hidden></h1><div class="flex top-actions"><button class="header-avatar" id="header-profile" type="button" data-page="profile" aria-label="Открыть профиль"><svg class="icon" data-avatar-placeholder aria-hidden="true"><use href="#i-person"/></svg><img data-avatar-image width="44" height="44" alt="" hidden></button><button class="icon-btn" id="header-qr" type="button" data-action="qr-pay" aria-label="Оплатить по QR" aria-haspopup="dialog"><svg class="icon" aria-hidden="true"><use href="#i-qr"/></svg></button><button class="favorite" id="detail-favorite" type="button" aria-label="Добавить в избранное" aria-pressed="false" hidden><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button></div></header>
+    <header class="topbar between"><button class="detail-back" id="card-back" type="button" data-page="accounts" aria-label="Вернуться к счетам" hidden><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg></button><h1 id="card-title" hidden></h1><button class="detail-back" id="detail-back" data-page="crypto" aria-label="Вернуться к списку монет" title="Все монеты" hidden><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg></button><button class="icon-btn favorites-toggle" id="favorites-toggle" data-action="favorites-filter" aria-label="Показать избранные монеты" aria-pressed="false" title="Избранное" hidden><svg class="icon"><use href="#i-star"/></svg></button><div class="breadcrumb">Личный кабинет <span style="color:#53627d">/</span> <span id="breadcrumb-current" style="color:#e2e9f4">Счета</span></div><span class="header-mark" id="header-mark" aria-label="Patrn">P</span><label class="search transaction-search" id="transaction-search-field"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input type="search" id="transaction-search" aria-label="Поиск по операциям" aria-controls="transaction-search-results" placeholder="Поиск по операциям" autocomplete="off"></label><h1 class="profile-title" id="profile-heading" hidden>Профиль</h1><h1 class="coin-chart-title" id="coin-chart-title" hidden></h1><div class="flex top-actions"><button class="header-avatar" id="header-profile" type="button" data-page="profile" aria-label="Открыть профиль"><svg class="icon" data-avatar-placeholder aria-hidden="true"><use href="#i-person"/></svg><img data-avatar-image width="44" height="44" alt="" hidden></button><button class="icon-btn" id="header-qr" type="button" data-action="qr-pay" aria-label="Оплатить по QR" aria-haspopup="dialog"><svg class="icon" aria-hidden="true"><use href="#i-qr"/></svg></button><button class="favorite" id="detail-favorite" type="button" aria-label="Добавить в избранное" aria-pressed="false" hidden><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button></div></header>
     <div class="crypto-balance-bar" id="crypto-balance-bar" hidden aria-label="Баланс криптопортфеля"><div class="total" id="portfolio-value" aria-live="polite"></div></div>
     <section id="accounts-page">
       <section class="panel" id="transaction-search-results" aria-labelledby="transaction-search-heading" hidden>
@@ -384,6 +400,7 @@
         <table class="market-table"><thead><tr><th class="rank">#</th><th>Монета</th><th class="right">Цена</th><th class="right"><button class="plain muted" style="min-height:36px" id="sort-change" aria-label="Сортировать по изменению за 24 часа">24 ч. ↕</button></th><th class="chart-column right">График за 7 дней</th><th class="holding-column right">У вас</th><th aria-label="Избранное"></th></tr></thead><tbody id="market-body"></tbody></table><div class="empty" id="favorites-empty" role="status" hidden>В избранном пока нет монет. Нажмите звёздочку ещё раз, чтобы увидеть весь список.</div></section><p class="market-disclaimer">Все цены и графики вымышлены. В реальной торговле стоимость криптовалют меняется, а прибыль не гарантирована.</p>
     </section>
     <section id="detail-page" hidden></section>
+    <section id="card-page" aria-labelledby="card-title" hidden></section>
     <section id="profile-page" aria-labelledby="profile-heading" hidden>
       <div class="profile-summary">
         <button type="button" class="profile-photo-button" id="profile-photo-button">
@@ -680,7 +697,7 @@ Apache License
       if(s.accountLayoutVersion!==2){const replacements={p:'Patrn',n:'Nord Bank',a:'Aero'};for(const preset of initialState().cards){const old=s.cards.find(c=>c.id===preset.id&&c.bank===replacements[preset.id]);if(old)Object.assign(old,{bank:preset.bank,type:preset.type,balance:preset.balance,style:preset.style});}for(const tx of s.transactions)tx.detail=tx.detail.replace(/Nord Bank/g,'Альфа-Банк').replace(/Patrn/g,'Сбер').replace(/Aero/g,'ВТБ');s.accountLayoutVersion=2;}if(s.historyVersion!==2){const oldest=Math.min(Date.now(),...s.transactions.map(t=>t.date));const ids=new Set(s.transactions.map(t=>t.id));s.transactions.push(...demoHistoryTail(oldest).filter(t=>!ids.has(t.id)));s.transactions=s.transactions.slice(0,150);s.historyVersion=2;}if(!['beginner','advanced'].includes(s.chartMode))s.chartMode='beginner';
       if(typeof s.avatar!=='string'||s.avatar.length>400000||!s.avatar.startsWith('data:image/jpeg;base64,'))s.avatar=null;
       return s;}catch{return initialState();}}
-    let state=loadState(),currentPage='accounts',currentCoin='btc',historyExpanded=false,favoritesOnly=false,sortDirection=0,period='1Н',toastTimer,storageWarned=false;
+    let state=loadState(),currentPage='accounts',currentCoin='btc',currentCard=null,historyExpanded=false,favoritesOnly=false,sortDirection=0,period='1Н',toastTimer,storageWarned=false;
     function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch{if(!storageWarned){storageWarned=true;setTimeout(()=>toast('Браузер не разрешает сохранять данные. Изменения доступны до закрытия страницы.'),200);}}}
     function number(v,d=2){return new Intl.NumberFormat('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);}
     function rub(cents){return `${number(cents/100)} ₽`;}
@@ -722,7 +739,7 @@ Apache License
     }
 
     function cardImage(c){const palettes={sber:['#18884c','#76c74c'],alfa:['#c62235','#ef554f'],vtb:['#10338c','#2584cd'],blue:['#086ba9','#1454b5'],slate:['#29364a','#4c5d70'],ice:['#718fa6','#abc7d9']};const [a,b]=palettes[c.style]||palettes.blue;const mark=c.style==='sber'?'<circle cx="18" cy="17" r="8" fill="none" stroke="white" stroke-width="2"/><path d="m13 16 4 4 10-10" fill="none" stroke="white" stroke-width="2.3"/>':c.style==='alfa'?'<text x="11" y="23" font-size="23" font-weight="700" fill="white">α</text>':c.style==='vtb'?'<path d="M10 10h17m-19 4h17m-19 4h17" stroke="white" stroke-width="2.5"/>':'';const label=c.style==='sber'?'Сбер':c.style==='alfa'?'Альфа':c.style==='vtb'?'ВТБ':c.bank;const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="144" height="92" viewBox="0 0 144 92"><defs><linearGradient id="b"><stop stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="144" height="92" rx="12" fill="url(#b)"/><circle cx="142" cy="68" r="66" fill="none" stroke="white" stroke-opacity=".1" stroke-width="16"/><g font-family="Arial,sans-serif">${mark}<text x="${mark?33:10}" y="20" fill="white" font-size="12" font-weight="700">${esc(label)}</text><rect x="12" y="36" width="18" height="14" rx="3" fill="#dccda4"/><path d="M18 36v14m-6-7h18" stroke="#9e9275" stroke-width=".7"/><text x="12" y="76" fill="white" opacity=".9" font-size="10">•• ${c.last}</text><text x="109" y="76" fill="white" font-size="10" font-style="italic" font-weight="700">мир</text></g></svg>`;return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;}
-    function cardHtml(c){return `<div class="bank-top"><span class="bank-name">${esc(c.bank)}${c.bank==='Patrn'?'.':''}</span><span class="bank-type">${c.frozen?'ЗАМОРОЖЕНА':esc(c.type)}</span></div><div class="bank-balance">${money(c.balance)}</div><div class="bank-bottom"><div>•••• &nbsp; ${c.last}<small>${esc(state.name.toLocaleUpperCase('ru'))} / DEBIT</small></div><span class="payment-logo">${c.style==='slate'?'VISA':'мир'}</span></div>`;}
+    function cardHtml(c){return `<div class="bank-top"><span class="bank-name">${esc(c.bank)}${c.bank==='Patrn'?'.':''}</span><span class="bank-type">${c.frozen?'ЗАМОРОЖЕНА':esc(c.type)}</span></div><div class="bank-bottom"><div>•••• &nbsp; ${c.last}<small>${esc(state.name.toLocaleUpperCase('ru'))} / DEBIT</small></div><span class="payment-logo">${c.style==='slate'?'VISA':'мир'}</span></div>`;}
     function accountBalance(){return state.cards.reduce((sum,card)=>sum+card.balance,0);}
     function renderAccounts(){const total=accountBalance();$('#total-balance').innerHTML=state.hide?'••• •••':`${number(state.currency==='USD'?total/100/USD_RATE:total/100)} <span>${state.currency==='USD'?'$':'₽'}</span>`;$$('[data-currency]').forEach(b=>{const active=b.dataset.currency===state.currency;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});$('#eye-button').innerHTML=icon(state.hide?'eye-off':'eye');$('#eye-button').setAttribute('aria-label',state.hide?'Показать баланс':'Скрыть баланс');$('#cards').innerHTML=state.cards.map(c=>`<button class="account-row ${c.frozen?'frozen':''}" data-card="${esc(c.id)}" aria-label="Карта ${esc(c.bank)}, заканчивается на ${c.last}"><img class="card-thumbnail" src="${cardImage(c)}" alt="Демо-карта ${esc(c.bank)}" width="72" height="46"><span class="account-label"><span class="account-bank">${esc(c.bank)}</span><span class="account-number">${c.frozen?'Заморожена':'•• '+c.last}</span></span><span class="account-amount">${money(c.balance)}</span>${icon('chevron','account-chevron')}</button>`).join('');$('#transactions').innerHTML=state.transactions.slice(0,historyExpanded?undefined:4).map(transactionHtml).join('')||'<div class="empty">Здесь появятся ваши операции</div>';const historyButton=$('[data-action="history"]');historyButton.setAttribute('aria-expanded',String(historyExpanded));historyButton.innerHTML=`${historyExpanded?'Свернуть':'Развернуть'} <span aria-hidden="true">${historyExpanded?'↑':'↓'}</span>`;renderTransactionSearch();}
     function renderTransactionSearch(){
@@ -822,14 +839,19 @@ Apache License
     function greetingForHour(hour=new Date().getHours()){
       return hour<5?'Доброй ночи':hour<12?'Доброе утро':hour<18?'Добрый день':'Добрый вечер';
     }
-    function render(){$('#greeting').textContent=`${greetingForHour()}, ${state.name}`;$('#today').textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',weekday:'long'}).format(new Date());renderAccounts();renderMarket();renderProfile();if(currentPage==='detail')renderDetail();}
-    function navigate(page,coin){
+    function render(){$('#greeting').textContent=`${greetingForHour()}, ${state.name}`;$('#today').textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',weekday:'long'}).format(new Date());renderAccounts();renderMarket();renderProfile();if(currentPage==='detail')renderDetail();if(currentPage==='card')renderCard();}
+    function navigate(page,target){
+      const card = page==='card';
+      if(card&&!state.cards.some(item=>item.id===target))return;
       currentPage = page;
       const detail = page==='detail';
       const crypto = page==='crypto'||detail;
-      const section = detail ? 'crypto' : page;
+      const section = detail ? 'crypto' : card ? 'accounts' : page;
       const main = $('.main');
       main.classList.toggle('coin-view',detail);
+      main.classList.toggle('card-view',card);
+      $('#card-back').hidden = !card;
+      $('#card-title').hidden = !card;
       main.classList.toggle('crypto-view',crypto);
       const accounts = page==='accounts';
       main.classList.toggle('accounts-view',accounts);
@@ -844,8 +866,9 @@ Apache License
       const balance = $('#crypto-balance-bar');
       if(crypto)$('.topbar').insertBefore(balance,$('.top-actions'));
       else main.insertBefore(balance,$('#accounts-page'));
-      if(coin){currentCoin=coin;period='1Н';}
-      for(const name of ['accounts','crypto','detail','profile']){
+      if(detail&&target){currentCoin=target;period='1Н';}
+      if(card)currentCard=target;
+      for(const name of ['accounts','crypto','detail','profile','card']){
         $('#'+name+'-page').hidden = page!==name;
       }
       const mobileTabs = $$('.mobile-nav .nav-btn');
@@ -869,7 +892,7 @@ Apache License
     function closeModal(){disposeQrScanner?.();$('#modal').close();}
     $('#modal').addEventListener('cancel',()=>disposeQrScanner?.());
     window.addEventListener('pagehide',()=>{if(disposeQrScanner)closeModal();});
-    function addTransaction(name,detail,amount,kind){state.transactions.unshift({id:Date.now()+'-'+Math.random().toString(36).slice(2),name,detail,amount,kind,date:Date.now()});state.transactions=state.transactions.slice(0,150);}
+    function addTransaction(name,detail,amount,kind,cardId){state.transactions.unshift({id:Date.now()+'-'+Math.random().toString(36).slice(2),name,detail,amount,kind,cardId,date:Date.now()});state.transactions=state.transactions.slice(0,150);}
     function parseAmount(value){const s=String(value).trim().replace(/\s/g,'').replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(s))return NaN;const cents=Math.round(Number(s)*100);return Number.isSafeInteger(cents)&&cents>0?cents:NaN;}
     function cardOptions(exclude){return state.cards.filter(c=>!c.frozen&&c.id!==exclude).map(c=>`<option value="${esc(c.id)}">${esc(c.bank)} • ${c.last} — ${money(c.balance)}</option>`).join('');}
     function error(text){$('#form-error').textContent=text;}
@@ -906,7 +929,7 @@ Apache License
         if(payment>card.balance)return error('На этой карте недостаточно средств.');
         event.currentTarget.onsubmit = null;
         card.balance -= payment;
-        addTransaction('Оплата по QR',`СБП · ${card.bank} • ${card.last}`,-payment,'qr');
+        addTransaction('Оплата по QR',`СБП · ${card.bank} • ${card.last}`,-payment,'qr',card.id);
         commit(`Демо-оплата ${rub(payment)} выполнена`);
       };
     }
@@ -1044,8 +1067,8 @@ Apache License
       };
     }
 
-    function transferModal(mode){const self=mode==='self',topup=mode==='topup';if(!state.cards.some(c=>!c.frozen)){toast('Сначала разморозьте одну из карт.');return;}if(self&&state.cards.filter(c=>!c.frozen).length<2){toast('Для перевода себе нужны две активные карты.');return;}openModal(topup?'Пополнить карту':self?'Перевести себе':'Перевести деньги',`<p class="modal-subtitle">${topup?'Пополнение виртуальными деньгами':self?'Между вашими картами · без комиссии':'Учебный перевод · без комиссии'}</p><form id="money-form" novalidate><label class="field">${topup?'Куда зачислить':'Откуда списать'}<select id="from-card">${cardOptions()}</select></label>${self?`<label class="field">Куда перевести<select id="to-card"></select></label>`:topup?'':`<label class="field">Имя получателя<input id="recipient" maxlength="50" placeholder="Например, Анна" autocomplete="off" required></label>`}<label class="field">Сумма в рублях<input id="amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label><div class="form-note">${topup?'Добавьте до 1 000 000 ₽ за раз на демо-счёт.':self?'Общий баланс не изменится: деньги переместятся между картами.':'Перевод демонстрационный. Сумма спишется с вашей виртуальной карты.'}</div><div class="form-error" id="form-error" role="alert"></div><button class="primary full" type="submit">${topup?'Пополнить':self?'Перевести себе':'Перевести'}</button></form>`);if(self){const update=()=>{$('#to-card').innerHTML=cardOptions($('#from-card').value);};$('#from-card').addEventListener('change',update);update();}$('#money-form').onsubmit=e=>{e.preventDefault();const amount=parseAmount($('#amount').value),from=state.cards.find(c=>c.id===$('#from-card').value);if(!Number.isFinite(amount))return error('Введите сумму больше нуля, не более двух знаков после запятой.');if(!from||from.frozen)return error('Выберите активную карту.');if(amount>(topup?100000000:1000000000))return error(topup?'За раз можно пополнить не более 1 000 000 ₽.':'Максимальная сумма перевода — 10 000 000 ₽.');if(topup){if(!Number.isSafeInteger(from.balance+amount))return error('Достигнут лимит баланса.');from.balance+=amount;addTransaction('Пополнение счёта',`${from.bank} • ${from.last}`,amount,'plus');commit(`На карту зачислено ${rub(amount)}`);return;}if(amount>from.balance)return error('На этой карте недостаточно средств.');if(self){const to=state.cards.find(c=>c.id===$('#to-card').value);if(!to||to.id===from.id||to.frozen)return error('Выберите другую активную карту.');if(!Number.isSafeInteger(to.balance+amount))return error('Достигнут лимит баланса карты получателя.');from.balance-=amount;to.balance+=amount;addTransaction(`Перевод себе · ${rub(amount)}`,`${from.bank} → ${to.bank}`,0,'swap');commit('Деньги переведены между вашими картами');}else{const recipient=$('#recipient').value.trim();if(recipient.length<2)return error('Укажите имя получателя: минимум 2 символа.');from.balance-=amount;addTransaction(`Перевод: ${recipient}`,`${from.bank} • ${from.last}`,-amount,'arrow');commit(`Перевод ${rub(amount)} выполнен`);}};}
-    function tradeModal(side){const c=coins.find(c=>c.id===currentCoin),buy=side==='buy',held=state.holdings[c.id]||0;let maxMode=false;if(!buy&&held<=0)return;if(!state.cards.some(c=>!c.frozen)){toast('Для сделки нужна хотя бы одна активная карта.');return;}const unitCents=c.price*USD_RATE*100;openModal(`${buy?'Купить':'Продать'} ${c.symbol}`,`<p class="modal-subtitle">${c.name} · ${dollar(c.price)} за 1 ${c.symbol}</p><form id="trade-form" novalidate><label class="field">${buy?'Списать с карты':'Зачислить на карту'}<select id="trade-card">${cardOptions()}</select></label><label class="field">${buy?'На какую сумму купить':'На какую сумму продать'} · ₽<input id="trade-amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label><div class="amount-buttons">${(buy?[1000,5000,10000]:[25,50,100]).map(n=>`<button type="button" data-preset="${n}">${buy?number(n,0)+' ₽':n+'%'}</button>`).join('')}</div><div class="trade-estimate"><div class="between"><span class="muted">${buy?'Получите':'Спишется'}</span><strong id="trade-estimate">0 ${c.symbol}</strong></div><div class="between"><span class="muted">Комиссия</span><strong>0 ₽</strong></div><div class="between"><span class="muted">Доступно ${buy?'на карте':'монет'}</span><strong id="trade-available"></strong></div></div><div class="form-note">Сделка по фиксированной демо-цене. Используются только виртуальные средства.${buy?' Минимальная покупка — 100 ₽.':''}</div><div class="form-error" id="form-error" role="alert"></div><button class="primary full" type="submit">${buy?'Купить':'Продать'} ${c.symbol}</button></form>`);const estimate=()=>{const amount=parseAmount($('#trade-amount').value),qty=!buy&&maxMode?held:Number.isFinite(amount)?amount/unitCents:0;$('#trade-estimate').textContent=`${quantity(qty)} ${c.symbol}`;const card=state.cards.find(c=>c.id===$('#trade-card').value);$('#trade-available').textContent=buy?money(card?.balance||0):state.hide?'•••':`${quantity(held)} ${c.symbol}`;};$('#trade-amount').oninput=()=>{maxMode=false;estimate();};$('#trade-card').onchange=estimate;$$('[data-preset]').forEach(b=>b.onclick=()=>{const n=Number(b.dataset.preset);maxMode=!buy&&n===100;$('#trade-amount').value=buy?String(n):(Math.round(held*unitCents*n/100)/100).toFixed(2);estimate();});estimate();$('#trade-form').onsubmit=e=>{e.preventDefault();const card=state.cards.find(c=>c.id===$('#trade-card').value),amount=!buy&&maxMode?Math.round(held*unitCents):parseAmount($('#trade-amount').value);if(!card||card.frozen)return error('Выберите активную карту.');if(!Number.isFinite(amount)||amount<1)return error('Введите сумму от 0,01 ₽.');if(buy&&amount<10000)return error('Минимальная покупка — 100 ₽.');if(buy&&amount>card.balance)return error('На выбранной карте недостаточно средств.');const qty=!buy&&maxMode?held:amount/unitCents;if(!buy&&qty>held+1e-12)return error('У вас недостаточно монет. Выберите 100%, чтобы продать всё.');if(!Number.isSafeInteger(card.balance+(buy?-amount:amount)))return error('Достигнут лимит баланса карты.');card.balance+=buy?-amount:amount;state.holdings[c.id]=buy?held+qty:Math.max(0,held-qty);if(state.holdings[c.id]<1e-14)state.holdings[c.id]=0;addTransaction(`${buy?'Покупка':'Продажа'} ${c.name}`,`${quantity(qty)} ${c.symbol} · Демо`,buy?-amount:amount,'crypto');commit(`${buy?'Куплено':'Продано'} ${quantity(qty)} ${c.symbol}`);};}
+    function transferModal(mode){const self=mode==='self',topup=mode==='topup';if(!state.cards.some(c=>!c.frozen)){toast('Сначала разморозьте одну из карт.');return;}if(self&&state.cards.filter(c=>!c.frozen).length<2){toast('Для перевода себе нужны две активные карты.');return;}openModal(topup?'Пополнить карту':self?'Перевести себе':'Перевести деньги',`<p class="modal-subtitle">${topup?'Пополнение виртуальными деньгами':self?'Между вашими картами · без комиссии':'Учебный перевод · без комиссии'}</p><form id="money-form" novalidate><label class="field">${topup?'Куда зачислить':'Откуда списать'}<select id="from-card">${cardOptions()}</select></label>${self?`<label class="field">Куда перевести<select id="to-card"></select></label>`:topup?'':`<label class="field">Имя получателя<input id="recipient" maxlength="50" placeholder="Например, Анна" autocomplete="off" required></label>`}<label class="field">Сумма в рублях<input id="amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label><div class="form-note">${topup?'Добавьте до 1 000 000 ₽ за раз на демо-счёт.':self?'Общий баланс не изменится: деньги переместятся между картами.':'Перевод демонстрационный. Сумма спишется с вашей виртуальной карты.'}</div><div class="form-error" id="form-error" role="alert"></div><button class="primary full" type="submit">${topup?'Пополнить':self?'Перевести себе':'Перевести'}</button></form>`);if(self){const update=()=>{$('#to-card').innerHTML=cardOptions($('#from-card').value);};$('#from-card').addEventListener('change',update);update();}$('#money-form').onsubmit=e=>{e.preventDefault();const amount=parseAmount($('#amount').value),from=state.cards.find(c=>c.id===$('#from-card').value);if(!Number.isFinite(amount))return error('Введите сумму больше нуля, не более двух знаков после запятой.');if(!from||from.frozen)return error('Выберите активную карту.');if(amount>(topup?100000000:1000000000))return error(topup?'За раз можно пополнить не более 1 000 000 ₽.':'Максимальная сумма перевода — 10 000 000 ₽.');if(topup){if(!Number.isSafeInteger(from.balance+amount))return error('Достигнут лимит баланса.');from.balance+=amount;addTransaction('Пополнение счёта',`${from.bank} • ${from.last}`,amount,'plus',from.id);commit(`На карту зачислено ${rub(amount)}`);return;}if(amount>from.balance)return error('На этой карте недостаточно средств.');if(self){const to=state.cards.find(c=>c.id===$('#to-card').value);if(!to||to.id===from.id||to.frozen)return error('Выберите другую активную карту.');if(!Number.isSafeInteger(to.balance+amount))return error('Достигнут лимит баланса карты получателя.');from.balance-=amount;to.balance+=amount;addTransaction(`Перевод себе · ${rub(amount)}`,`${from.bank} → ${to.bank}`,0,'swap');commit('Деньги переведены между вашими картами');}else{const recipient=$('#recipient').value.trim();if(recipient.length<2)return error('Укажите имя получателя: минимум 2 символа.');from.balance-=amount;addTransaction(`Перевод: ${recipient}`,`${from.bank} • ${from.last}`,-amount,'arrow',from.id);commit(`Перевод ${rub(amount)} выполнен`);}};}
+    function tradeModal(side){const c=coins.find(c=>c.id===currentCoin),buy=side==='buy',held=state.holdings[c.id]||0;let maxMode=false;if(!buy&&held<=0)return;if(!state.cards.some(c=>!c.frozen)){toast('Для сделки нужна хотя бы одна активная карта.');return;}const unitCents=c.price*USD_RATE*100;openModal(`${buy?'Купить':'Продать'} ${c.symbol}`,`<p class="modal-subtitle">${c.name} · ${dollar(c.price)} за 1 ${c.symbol}</p><form id="trade-form" novalidate><label class="field">${buy?'Списать с карты':'Зачислить на карту'}<select id="trade-card">${cardOptions()}</select></label><label class="field">${buy?'На какую сумму купить':'На какую сумму продать'} · ₽<input id="trade-amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label><div class="amount-buttons">${(buy?[1000,5000,10000]:[25,50,100]).map(n=>`<button type="button" data-preset="${n}">${buy?number(n,0)+' ₽':n+'%'}</button>`).join('')}</div><div class="trade-estimate"><div class="between"><span class="muted">${buy?'Получите':'Спишется'}</span><strong id="trade-estimate">0 ${c.symbol}</strong></div><div class="between"><span class="muted">Комиссия</span><strong>0 ₽</strong></div><div class="between"><span class="muted">Доступно ${buy?'на карте':'монет'}</span><strong id="trade-available"></strong></div></div><div class="form-note">Сделка по фиксированной демо-цене. Используются только виртуальные средства.${buy?' Минимальная покупка — 100 ₽.':''}</div><div class="form-error" id="form-error" role="alert"></div><button class="primary full" type="submit">${buy?'Купить':'Продать'} ${c.symbol}</button></form>`);const estimate=()=>{const amount=parseAmount($('#trade-amount').value),qty=!buy&&maxMode?held:Number.isFinite(amount)?amount/unitCents:0;$('#trade-estimate').textContent=`${quantity(qty)} ${c.symbol}`;const card=state.cards.find(c=>c.id===$('#trade-card').value);$('#trade-available').textContent=buy?money(card?.balance||0):state.hide?'•••':`${quantity(held)} ${c.symbol}`;};$('#trade-amount').oninput=()=>{maxMode=false;estimate();};$('#trade-card').onchange=estimate;$$('[data-preset]').forEach(b=>b.onclick=()=>{const n=Number(b.dataset.preset);maxMode=!buy&&n===100;$('#trade-amount').value=buy?String(n):(Math.round(held*unitCents*n/100)/100).toFixed(2);estimate();});estimate();$('#trade-form').onsubmit=e=>{e.preventDefault();const card=state.cards.find(c=>c.id===$('#trade-card').value),amount=!buy&&maxMode?Math.round(held*unitCents):parseAmount($('#trade-amount').value);if(!card||card.frozen)return error('Выберите активную карту.');if(!Number.isFinite(amount)||amount<1)return error('Введите сумму от 0,01 ₽.');if(buy&&amount<10000)return error('Минимальная покупка — 100 ₽.');if(buy&&amount>card.balance)return error('На выбранной карте недостаточно средств.');const qty=!buy&&maxMode?held:amount/unitCents;if(!buy&&qty>held+1e-12)return error('У вас недостаточно монет. Выберите 100%, чтобы продать всё.');if(!Number.isSafeInteger(card.balance+(buy?-amount:amount)))return error('Достигнут лимит баланса карты.');card.balance+=buy?-amount:amount;state.holdings[c.id]=buy?held+qty:Math.max(0,held-qty);if(state.holdings[c.id]<1e-14)state.holdings[c.id]=0;addTransaction(`${buy?'Покупка':'Продажа'} ${c.name}`,`${quantity(qty)} ${c.symbol} · Демо`,buy?-amount:amount,'crypto',card.id);commit(`${buy?'Куплено':'Продано'} ${quantity(qty)} ${c.symbol}`);};}
 
     function setupInlineChart(stage){
       const plot=stage.querySelector('svg'),advanced=state.chartMode==='advanced',coin=coins.find(c=>c.id===currentCoin),selectedPeriod=period,clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
@@ -1069,7 +1092,73 @@ Apache License
       if(advanced){stage.addEventListener('pointermove',e=>{if(e.pointerType==='mouse')showReadout(e.clientX);});stage.addEventListener('pointerleave',clearReadout);stage.addEventListener('click',e=>showReadout(e.clientX));stage.addEventListener('touchstart',e=>{if(e.touches.length>1)clearReadout();},{passive:true});}
       paint();
     }
-    function showCard(id){const c=state.cards.find(c=>c.id===id);if(!c)return;openModal(`Карта ${c.bank}`,`<div class="modal-card"><div class="bank-card ${c.style} ${c.frozen?'frozen':''}">${cardHtml(c)}</div></div><div class="detail-stats"><span>Статус</span>${c.frozen?'Заморожена':'Активна'}</div><div class="detail-stats"><span>Валюта счёта</span>Российский рубль</div><div class="detail-stats"><span>Владелец</span>${esc(state.name)}</div><p class="modal-text">${c.frozen?'Разморозьте карту, чтобы выполнять операции.':'Заморозка временно отключит покупки и переводы по этой карте.'}</p><button class="primary full secondary" id="freeze-card">${c.frozen?'Разморозить карту':'Заморозить карту'}</button>`);$('#freeze-card').onclick=()=>{c.frozen=!c.frozen;save();render();showCard(id);toast(c.frozen?'Карта заморожена':'Карта снова активна');};}
+    function renderCard(){
+      const card = state.cards.find(item=>item.id===currentCard);
+      $('#card-title').textContent = 'Карта '+card.bank;
+      const label = card.bank+' • '+card.last;
+      const uniqueLabel = state.cards.filter(item=>item.bank===card.bank&&item.last===card.last).length===1;
+      const expenses = state.transactions.filter(transaction=>transaction.amount<0&&(
+        transaction.cardId ? transaction.cardId===card.id : uniqueLabel&&transaction.detail.endsWith(label)
+      ));
+      $('#card-page').innerHTML = `
+        <div class="card-page-visual"><div class="bank-card ${card.style} ${card.frozen?'frozen':''}">${cardHtml(card)}</div></div>
+        <div class="card-page-balance"><div class="muted small">Баланс карты</div><div class="total">${money(card.balance)}</div></div>
+        <div class="card-page-actions">
+          <button class="primary full" type="button" id="card-transfer" ${card.frozen?'disabled':''}>Перевести по номеру телефона или карты</button>
+          <button class="text-btn" type="button" id="freeze-card">${card.frozen?'Разморозить карту':'Заморозить карту'}</button>
+        </div>
+        <section class="panel card-expenses"><h2>Расходы по карте</h2>
+          ${expenses.length ? expenses.map(transactionHtml).join('') : '<p class="muted small">По этой карте пока нет расходов.</p>'}
+        </section>`;
+      $('#card-transfer').onclick = ()=>cardTransferModal(card);
+      $('#freeze-card').onclick = ()=>{
+        card.frozen = !card.frozen;
+        save();
+        render();
+        $('#freeze-card').focus({preventScroll:true});
+        toast(card.frozen?'Карта заморожена':'Карта снова активна');
+      };
+    }
+
+    function cardTransferModal(card){
+      if(card.frozen)return;
+      openModal('Перевести с карты',`
+        <p class="modal-subtitle">${esc(card.bank)} • ${card.last} · учебный перевод</p>
+        <form id="card-transfer-form" novalidate>
+          <label class="field">Способ перевода<select id="card-transfer-method"><option value="phone">По номеру телефона</option><option value="card">По номеру карты</option></select></label>
+          <label class="field"><span id="card-recipient-label">Номер телефона</span><input id="card-recipient" type="tel" inputmode="tel" maxlength="30" placeholder="+7 900 000-00-00" autocomplete="off" required></label>
+          <label class="field">Сумма в рублях<input id="card-transfer-amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label>
+          <div class="form-note">Для демо используйте вымышленные номера. Сумма спишется с виртуальной карты.</div>
+          <div class="form-error" id="form-error" role="alert"></div>
+          <button class="primary full" type="submit">Подтвердить демо-перевод</button>
+        </form>`);
+      const method = $('#card-transfer-method');
+      const recipient = $('#card-recipient');
+      method.onchange = ()=>{
+        const phone = method.value==='phone';
+        $('#card-recipient-label').textContent = phone?'Номер телефона':'Номер карты';
+        recipient.inputMode = phone?'tel':'numeric';
+        recipient.placeholder = phone?'+7 900 000-00-00':'0000 0000 0000 0000';
+        recipient.value = '';
+      };
+      $('#card-transfer-form').onsubmit = event=>{
+        event.preventDefault();
+        const phone = method.value==='phone';
+        const value = recipient.value.trim().replace(/[\s()-]/g,'');
+        const valid = phone ? /^\+?[0-9]{10,15}$/.test(value) : /^[0-9]{13,19}$/.test(value);
+        const amount = parseAmount($('#card-transfer-amount').value);
+        if(!valid)return error(phone?'Проверьте номер телефона.':'Проверьте номер карты.');
+        if(!Number.isFinite(amount))return error('Введите сумму больше нуля, не более двух знаков после запятой.');
+        if(amount>1000000000)return error('Максимальная сумма перевода — 10 000 000 ₽.');
+        if(card.frozen)return error('Карта заморожена.');
+        if(amount>card.balance)return error('На этой карте недостаточно средств.');
+        card.balance -= amount;
+        addTransaction(phone?'Перевод по номеру телефона':'Перевод по номеру карты',
+          `Получатель • ${value.slice(-4)} · ${card.bank} • ${card.last}`,-amount,'arrow',card.id);
+        commit(`Демо-перевод ${rub(amount)} выполнен`);
+      };
+    }
+
     function addCardModal(){if(state.cards.length>=8){toast('В демоверсии можно добавить до 8 карт.');return;}openModal('Добавить карту',`<p class="modal-subtitle">Создайте ещё одну виртуальную карту</p><form id="add-form"><label class="field">Банк<select id="bank-name"><option>Сбер</option><option>Альфа-Банк</option><option>ВТБ</option></select></label><label class="field">Стиль карты<select id="card-style"><option value="sber">Сбер · зелёная</option><option value="alfa">Альфа-Банк · красная</option><option value="vtb">ВТБ · синяя</option></select></label><div class="form-note">Новая карта появится с нулевым балансом. Пополните её виртуальными деньгами или переведите средства с другой карты.</div><button class="primary full" type="submit">Добавить карту</button></form>`);$('#add-form').onsubmit=e=>{e.preventDefault();state.cards.push({id:'card-'+Date.now(),bank:$('#bank-name').value,type:'Дебетовая',style:$('#card-style').value,last:String(Math.floor(1000+Math.random()*9000)),balance:0,frozen:false});commit('Новая демо-карта добавлена');};}
     function renderProfile(){
       $('#profile-display-name').textContent = state.name;
@@ -1177,7 +1266,7 @@ Apache License
       if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&typeof button.animate==='function')button.animate([{transform:'scale(.965)'},{transform:'scale(1)'}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)'});
       if(trusted&&typeof navigator.vibrate==='function'){try{navigator.vibrate(12);}catch{}}
     }
-    document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){const row=e.target.closest('#market-body tr[data-coin]');if(row)navigate('detail',row.dataset.coin);return;}if(b.classList.contains('quick-action'))quickActionFeedback(b,e.isTrusted);if(b.dataset.currency){state.currency=b.dataset.currency;save();render();}else if(b.dataset.page)navigate(b.dataset.page);else if(b.dataset.coin)navigate('detail',b.dataset.coin);else if(b.dataset.card)showCard(b.dataset.card);else if(b.dataset.favorite){const id=b.dataset.favorite;state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];save();renderMarket();if(currentPage==='detail')renderDetail();}else if(b.dataset.chartMode)setChartMode(b.dataset.chartMode);else if(b.dataset.period){period=b.dataset.period;renderDetail();}else if(b.dataset.trade)tradeModal(b.dataset.trade);else if(b.dataset.action){switch(b.dataset.action){case 'visibility':state.hide=!state.hide;save();render();break;case 'transfer':case 'self':case 'topup':transferModal(b.dataset.action);break;case 'add-card':addCardModal();break;case 'qr-pay':qrScannerModal();break;case 'profile':profileModal();break;case 'help':helpModal();break;case 'history':historyExpanded=!historyExpanded;renderAccounts();break;case 'favorites-filter':favoritesOnly=!favoritesOnly;if(currentPage==='detail')navigate('crypto');else renderMarket();break;case 'notifications':openModal('Уведомления',`<div class="notice"><strong>Добро пожаловать в Patrn</strong><p>Ваше учебное пространство готово. Все карты и монеты доступны для знакомства.</p></div><div class="notice"><strong>Данные остаются с вами</strong><p>История и балансы сохраняются в этом браузере. Управлять демоданными можно в профиле.</p></div>`);break;}}});
+    document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){const row=e.target.closest('#market-body tr[data-coin]');if(row)navigate('detail',row.dataset.coin);return;}if(b.classList.contains('quick-action'))quickActionFeedback(b,e.isTrusted);if(b.dataset.currency){state.currency=b.dataset.currency;save();render();}else if(b.dataset.page)navigate(b.dataset.page);else if(b.dataset.coin)navigate('detail',b.dataset.coin);else if(b.dataset.card)navigate('card',b.dataset.card);else if(b.dataset.favorite){const id=b.dataset.favorite;state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];save();renderMarket();if(currentPage==='detail')renderDetail();}else if(b.dataset.chartMode)setChartMode(b.dataset.chartMode);else if(b.dataset.period){period=b.dataset.period;renderDetail();}else if(b.dataset.trade)tradeModal(b.dataset.trade);else if(b.dataset.action){switch(b.dataset.action){case 'visibility':state.hide=!state.hide;save();render();break;case 'transfer':case 'self':case 'topup':transferModal(b.dataset.action);break;case 'add-card':addCardModal();break;case 'qr-pay':qrScannerModal();break;case 'profile':profileModal();break;case 'help':helpModal();break;case 'history':historyExpanded=!historyExpanded;renderAccounts();break;case 'favorites-filter':favoritesOnly=!favoritesOnly;if(currentPage==='detail')navigate('crypto');else renderMarket();break;case 'notifications':openModal('Уведомления',`<div class="notice"><strong>Добро пожаловать в Patrn</strong><p>Ваше учебное пространство готово. Все карты и монеты доступны для знакомства.</p></div><div class="notice"><strong>Данные остаются с вами</strong><p>История и балансы сохраняются в этом браузере. Управлять демоданными можно в профиле.</p></div>`);break;}}});
     const LOCK_STORE = STORE+'-lock-v1';
     const encoder = new TextEncoder();
     const entry = $('#entry-lock');
@@ -1220,14 +1309,13 @@ Apache License
     }
     function paintPin(){
       entryCells.forEach((cell,index)=>cell.classList.toggle('filled',index<entryPin.value.length));
-      entryClear.hidden = !entryPin.value.length&&pendingPin===null;
+      entryClear.disabled = !entryPin.value.length&&pendingPin===null;
     }
     function renderEntry(){
       $('#entry-greeting').textContent = greetingForHour()+',';
       $('#entry-name').textContent = state.name;
       $('#entry-label').textContent = lockRecord ? 'Введите пароль' : pendingPin===null ? 'Придумайте код из 4 цифр' : 'Повторите код';
       paintPin();
-      entryDevice.hidden = !platformAvailable||!lockRecord?.passkey;
       securityDevice.hidden = !platformAvailable;
       securityDevice.textContent = lockRecord?.passkey ? 'Отключить вход устройством' : 'Подключить Face ID или устройство';
       securityStatus.textContent = !platformAvailable
@@ -1430,6 +1518,12 @@ Apache License
     };
     entryDevice.onclick = async()=>{
       if(deviceRequest||entrySubmit.disabled)return;
+      if(!platformAvailable||!lockRecord?.passkey){
+        entryError.textContent = platformAvailable
+          ? 'Сначала войдите по PIN и подключите Face ID в профиле.'
+          : 'Face ID доступен на совместимом устройстве на сайте Patrn. Здесь можно войти по PIN.';
+        return;
+      }
       const request = new AbortController();
       deviceRequest = request;
       entryDevice.disabled = true;

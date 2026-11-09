@@ -56,8 +56,9 @@
     .settings-choices button.active{border-color:#0297de99;background:#0297de22;color:var(--accent-light);font-weight:600}.chart-mode-description{font-size:11px;line-height:1.7;color:var(--muted);margin:var(--s3) 0 0}.chart-tools{justify-content:space-between}.chart-kind{font-size:10px;color:var(--muted);line-height:1.3}.chart-tools .periods{flex-shrink:0}.market-quote-unit{display:block;font-size:9px;color:var(--muted);line-height:1.2}.inline-chart.advanced{position:relative}.inline-chart.advanced>.big-chart{width:calc(100% - 60px);height:255px}.advanced-price-axis{position:absolute;right:0;top:0;width:57px;height:100%;pointer-events:none}.advanced-price-axis span{position:absolute;right:0;transform:translateY(-50%);font-size:9px;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}.advanced-price-axis .last-price{color:#b6e6ff;background:#123b56;border:1px solid #0297de55;border-radius:4px;padding:2px 3px;font-size:9px}.volume-label{position:absolute;left:3px;top:80%;font-size:8px;color:var(--muted);pointer-events:none}.candle-crosshair{position:absolute;top:0;height:100%;width:0;border-left:1px dashed #a1aec680;pointer-events:none}.candle-readout{position:absolute;left:4px;top:4px;z-index:2;width:calc(100% - 68px);max-width:360px;padding:8px;border:1px solid #40516d;border-radius:8px;background:#0a1430ed;pointer-events:none;color:var(--muted);font-size:9px;line-height:1.5}.candle-readout>strong{font-size:10px;color:var(--text);font-weight:500}.candle-readout>div{display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;margin:4px 0}.candle-readout span{display:flex;justify-content:space-between;gap:4px}.candle-readout b{font-weight:500;color:var(--text);font-variant-numeric:tabular-nums}.candle-readout small{font-size:9px}
     @media(min-width:600px){.inline-chart.advanced>.big-chart{height:310px}.advanced-price-axis span,.candle-readout,.candle-readout small{font-size:11px}.candle-readout>strong{font-size:12px}.chart-kind{font-size:12px}}
     .inline-chart.advanced+.chart-axis{padding-right:60px}
-    :root{--chart-up:#16df9a;--chart-down:#ff496c;--chart-sma:#ffbf32;--chart-marker:#36bfff}
+    :root{--terminal-bg:#10151f;--chart-up:#16df9a;--chart-down:#ff496c;--chart-sma:#ffbf32;--chart-marker:#36bfff}
     #crypto-page,#detail-page{--green:var(--chart-up);--red:var(--chart-down)}
+    body:has(#detail-page:not([hidden])){background:var(--terminal-bg)}
     .main:has(#detail-page:not([hidden])){
       display:flex;flex-direction:column;min-height:100dvh;
     }
@@ -68,7 +69,7 @@
       display:flex;flex:1;flex-direction:column;
     }
     .terminal-chart{
-      --terminal-bg:#10151f;--terminal-grid:#252c38;--terminal-accent:var(--chart-sma);
+      --terminal-grid:#252c38;--terminal-accent:var(--chart-sma);
       padding:0;border-radius:var(--r1);background:var(--terminal-bg);border-color:var(--terminal-grid);
     }
     .terminal-quote{
@@ -166,7 +167,7 @@
         --coin-trade-bottom:calc(var(--mobile-nav-bottom) + var(--mobile-nav-height) * var(--mobile-nav-scale) + 10px);
         --coin-trade-clearance:84px;
       }
-      .coin-view .terminal-chart,#market-overview,.card-expenses{
+      .coin-view .terminal-chart,#market-overview,.card-expenses,.operation-history{
         margin-inline:calc(-1 * var(--main-gutter));
         border-inline:0;border-radius:0;
       }
@@ -181,7 +182,7 @@
       .coin-view .coin-trade{
         position:fixed;z-index:19;left:50%;bottom:var(--coin-trade-bottom);transform:translateX(-50%);
         width:min(480px,calc(100% - 32px));margin:0;padding:8px;
-        border:.5px solid #ffffff0d;border-radius:var(--r2);background:var(--bg);
+        border:.5px solid #ffffff0d;border-radius:var(--r2);background:var(--terminal-bg);
       }
     }
     .qr-video{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#080f21;border:1px solid var(--line);border-radius:var(--r1)}
@@ -280,42 +281,60 @@
         linear-gradient(145deg,var(--surface2),var(--bg) 42%,var(--bg) 66%,var(--surface));
     }
     .entry-panel{display:flex;flex-direction:column;width:min(100%,430px);min-height:100%;margin:auto}
+    .entry-heading{
+      display:grid;grid-template-columns:minmax(0,1fr) auto;
+      grid-template-areas:"logo help" "title title";align-items:center;gap:0 var(--s2);
+    }
+    .entry-heading .entry-logo{grid-area:logo}
+    .entry-heading .entry-title{grid-area:title}
+    .entry-heading #entry-help{grid-area:help;min-height:44px;padding:0 var(--s2);white-space:nowrap}
     .entry-logo{display:block;width:72px;height:auto;aspect-ratio:464/250;object-fit:contain;mix-blend-mode:normal;border:0;border-radius:0}
-    .entry-title{margin:var(--s4) 0 var(--s5);font-size:clamp(25px,7vw,38px);line-height:1.13}
-    .entry-title span{display:block;overflow-wrap:anywhere}
-    .entry-label{display:block;margin-bottom:var(--s2);font-size:14px;font-weight:600}
-    .entry-code-row{display:flex;align-items:center;gap:var(--s2)}
+    .entry-title{min-width:0;margin:var(--s4) 0 var(--s5);font-size:clamp(22px,7vw,38px);line-height:1.13;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #entry-name{font-weight:750}
+    #entry-form{margin-block:auto;text-align:center}
+    .entry-label{display:block;margin-bottom:var(--s3);font-size:clamp(17px,4.8vw,20px);font-weight:600}
+    .entry-code-row{display:flex;justify-content:center}
     .entry-code{position:relative;border-radius:12px}
     .entry-code:focus-within{outline:2px solid var(--accent-light);outline-offset:4px}
     .entry-code input{
       position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;cursor:text;
     }
-    .entry-cells{display:grid;grid-template-columns:repeat(4,clamp(32px,10vw,48px));gap:3px;pointer-events:none}
-    .entry-cells span{display:grid;place-items:center;aspect-ratio:1;background:#55c4fc30;border-radius:4px}
-    .entry-cells span:first-child{border-radius:12px 4px 4px 12px}
-    .entry-cells span:last-child{border-radius:4px 12px 12px 4px}
-    .entry-cells .filled::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent-light)}
+    .entry-cells{display:flex;align-items:center;gap:var(--s4);height:44px;padding-inline:var(--s2);pointer-events:none}
+    .entry-cells span{width:17px;height:17px;border:1.5px solid #ffffff80;border-radius:50%;transition:background 120ms ease-out,border-color 120ms ease-out,box-shadow 120ms ease-out}
+    .entry-cells .filled{background:var(--accent-light);border-color:var(--accent-light)}
     .entry-feedback{margin:var(--s2) 0 0;color:var(--text);font-size:12px}
     #entry-error{min-height:1.5em}
     .entry-keypad{
-      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;
-      margin-top:auto;padding-top:clamp(20px,6dvh,72px);
+      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2) var(--s3);
+      padding-inline:var(--s2);
+      padding-top:clamp(20px,6dvh,72px);
     }
     .entry-key,.entry-tool{
-      display:grid;place-content:center;justify-items:center;min-height:clamp(48px,8.2dvh,72px);
-      border:1px solid #55c4fc2e;border-radius:20px;color:var(--text);background:#55c4fc24;
+      display:grid;place-content:center;justify-items:center;min-height:clamp(44px,7dvh,60px);
+      border:1px solid #55c4fc2e;border-radius:16px;color:var(--text);background:#55c4fc24;
     }
-    .entry-key{font-size:clamp(24px,7vw,34px);font-weight:650;line-height:1;touch-action:none}
+    .entry-key{align-self:center;height:clamp(44px,6.3dvh,54px);min-height:44px;border-radius:14px;font-size:clamp(22px,6.8vw,30px);font-weight:650;line-height:1;touch-action:none}
     .entry-key:active:not(:disabled),.entry-tool:active:not(:disabled){background:#55c4fc45}
     .entry-tool{border-color:transparent;background:none;text-align:center;font-size:13px;line-height:1.2}
-    .entry-tool .icon{width:30px;height:30px}
-    #entry-device{grid-column:3}
     .entry-unlocking{overflow:hidden}
     .entry-unlocking .entry-panel{
       animation:entry-controls-out 340ms ease-in both;
     }
-    .entry-unlocking .entry-cells .filled{
-      background:#55c4fc65;box-shadow:0 0 20px #55c4fc45;
+    .entry-pin-accepted .entry-cells .filled{
+      background:var(--chart-up);border-color:var(--chart-up);box-shadow:0 0 12px #16df9a66;
+    }
+    .entry-pin-rejected .entry-key{
+      color:#ffb0bb;border-color:var(--chart-down);background:#ff496c36;
+    }
+    .entry-pin-rejected .entry-cells .filled{
+      background:var(--chart-down);border-color:var(--chart-down);
+    }
+    @media(prefers-reduced-motion:no-preference){
+      .entry-pin-rejected .entry-keypad{animation:entry-keypad-shake 420ms ease-in-out}
+    }
+    @keyframes entry-keypad-shake{
+      20%,60%{transform:translateX(-5px)}
+      40%,80%{transform:translateX(5px)}
     }
     .entry-success{
       position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:var(--s4);
@@ -366,15 +385,15 @@
     @media(max-width:999px){#card-page{max-width:none}}
     .card-expenses h2{margin-bottom:var(--s3)}.tx-note{overflow-wrap:anywhere;margin-top:2px}
     .entry-clear{
-      flex-shrink:0;width:44px;height:44px;padding:0;
-      border:1px solid #55c4fc70;border-radius:12px;background:#55c4fc30;color:var(--text);
+      justify-self:center;align-self:center;width:44px;height:44px;padding:0;
+      border:0;border-radius:12px;background:transparent;color:var(--text);
       touch-action:none;
     }
-    .entry-clear .icon{width:25px;height:25px;stroke-width:1.9}
+    .entry-clear .icon{width:27.5px;height:27.5px;stroke-width:1.9}
     .entry-clear:disabled{opacity:.7}
     .entry-clear:hover:not(:disabled),.entry-clear:active:not(:disabled){background:#55c4fc55}
-    #entry-device{gap:3px;color:var(--accent-light);touch-action:none}
-    #entry-device span{font-size:11px;font-weight:600}
+    #entry-device{min-height:44px;color:#fff;touch-action:none}
+    #entry-device .icon{width:36.3px;height:36.3px}
   </style>
 </head>
 <body>
@@ -417,8 +436,12 @@
   </defs></svg>
   <section class="entry-lock" id="entry-lock" aria-labelledby="entry-title">
     <div class="entry-panel">
-      <img class="entry-logo" width="96" height="52" alt="Patrn">
-      <h1 class="entry-title" id="entry-title"><span id="entry-greeting"></span><span id="entry-name"></span></h1>
+      <div class="entry-heading">
+        <img class="entry-logo" width="96" height="52" alt="Patrn">
+        <h1 class="entry-title" id="entry-title"><span id="entry-greeting"></span> <span id="entry-name"></span></h1>
+        <button class="entry-tool" id="entry-help" type="button" aria-expanded="false" aria-controls="entry-help-text">Забыли пароль?</button>
+      </div>
+      <p class="entry-feedback" id="entry-help-text" role="status" hidden></p>
       <form id="entry-form" novalidate>
         <label class="entry-label" id="entry-label" for="entry-pin">Введите пароль</label>
         <div class="entry-code-row">
@@ -426,12 +449,10 @@
             <input id="entry-pin" type="password" inputmode="none" maxlength="4" autocomplete="off" pattern="[0-9]{4}" aria-describedby="entry-error" required>
             <div class="entry-cells" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
           </div>
-          <button class="icon-btn entry-clear" id="entry-clear" type="button" aria-label="Стереть цифру" disabled><svg class="icon" viewBox="0 0 40 32" aria-hidden="true"><path d="M15.6 2.3h17.2A6.2 6.2 0 0 1 39 8.5v15a6.2 6.2 0 0 1-6.2 6.2H15.6a7 7 0 0 1-5.3-2.4L1.9 18a3 3 0 0 1 0-4l8.4-9.3a7 7 0 0 1 5.3-2.4Z"/><path d="m19.2 11.3 9.4 9.4m0-9.4-9.4 9.4"/></svg></button>
         </div>
         <p class="entry-feedback" id="entry-error" role="alert"></p>
         <button id="entry-submit" type="submit" hidden>Продолжить</button>
       </form>
-      <p class="entry-feedback" id="entry-help-text" role="status" hidden></p>
       <div class="entry-keypad" role="group" aria-label="Цифровая клавиатура">
         <button class="entry-key" type="button" data-pin-digit="1">1</button>
         <button class="entry-key" type="button" data-pin-digit="2">2</button>
@@ -442,12 +463,11 @@
         <button class="entry-key" type="button" data-pin-digit="7">7</button>
         <button class="entry-key" type="button" data-pin-digit="8">8</button>
         <button class="entry-key" type="button" data-pin-digit="9">9</button>
-        <button class="entry-tool" id="entry-help" type="button" aria-expanded="false" aria-controls="entry-help-text">Не могу<br>войти</button>
-        <button class="entry-key" type="button" data-pin-digit="0">0</button>
         <button class="entry-tool" id="entry-device" type="button" aria-label="Войти через Face ID или устройство">
           <svg class="icon" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M8 9v1m8-1v1m-4-1v4m-3 2c1.5 1.5 4.5 1.5 6 0"/></svg>
-          <span>Face ID</span>
         </button>
+        <button class="entry-key" type="button" data-pin-digit="0">0</button>
+        <button class="icon-btn entry-clear" id="entry-clear" type="button" aria-label="Стереть цифру" disabled><svg class="icon" viewBox="0 0 40 32" aria-hidden="true"><path d="M15.6 2.3h17.2A6.2 6.2 0 0 1 39 8.5v15a6.2 6.2 0 0 1-6.2 6.2H15.6a7 7 0 0 1-5.3-2.4L1.9 18a3 3 0 0 1 0-4l8.4-9.3a7 7 0 0 1 5.3-2.4Z"/><path d="m19.2 11.3 9.4 9.4m0-9.4-9.4 9.4"/></svg></button>
       </div>
     </div>
     <div class="entry-success" id="entry-success" role="status" hidden>
@@ -475,7 +495,7 @@
       <div class="card-caption"><h2>Счета и карты</h2><button class="text-btn flex gap" data-action="add-card"><svg class="icon" style="width:16px"><use href="#i-plus"/></svg>Добавить карту</button></div>
       <div class="cards" id="cards" aria-label="Ваши банковские карты"></div>
       <section class="quick-section"><h2 class="section-head">Быстрые действия</h2><div class="quick-actions"><button class="quick-action" data-action="transfer"><span class="action-icon"><svg class="icon"><use href="#i-arrow"/></svg></span><span>Перевести</span><svg class="icon action-arrow"><use href="#i-chevron"/></svg></button><button class="quick-action" data-action="self"><span class="action-icon"><svg class="icon"><use href="#i-own-transfer"/></svg></span><span>Между своими</span><svg class="icon action-arrow"><use href="#i-chevron"/></svg></button><button class="quick-action" data-action="topup"><span class="action-icon"><svg class="icon"><use href="#i-plus"/></svg></span><span>Пополнить</span><svg class="icon action-arrow"><use href="#i-chevron"/></svg></button></div></section>
-      <div class="dashboard-grid"><section class="panel"><div class="panel-head between"><h2>История операций</h2><button class="text-btn expand-history" data-action="history" aria-controls="transactions" aria-expanded="false">Развернуть <span aria-hidden="true">↓</span></button></div><div id="transactions"></div></section></div>
+      <div class="dashboard-grid"><section class="panel operation-history"><div class="panel-head between"><h2>История операций</h2><button class="text-btn expand-history" data-action="history" aria-controls="transactions" aria-expanded="false">Развернуть <span aria-hidden="true">↓</span></button></div><div id="transactions"></div></section></div>
     </section>
     <section id="crypto-page" hidden>
       <section class="panel" id="market-overview"><div class="between section-head"><h1>Обзор рынка</h1><span class="small muted" id="market-source" role="status">Bybit · загрузка</span></div>
@@ -2000,11 +2020,11 @@ Apache License
     document.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&coinSwipe?.id===e.pointerId)moveCoinSwipe(e,e.clientX,e.clientY);});
     document.addEventListener('pointerup',e=>{if(e.pointerType==='mouse'&&coinSwipe?.id===e.pointerId){moveCoinSwipe(e,e.clientX,e.clientY);finishCoinSwipe();}});
     document.addEventListener('pointercancel',e=>{if(e.pointerType==='mouse')coinSwipe=null;});
-    function quickActionFeedback(button,trusted){
+    function tapFeedback(button,trusted){
       if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&typeof button.animate==='function')button.animate([{transform:'scale(.965)'},{transform:'scale(1)'}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)'});
       if(trusted&&typeof navigator.vibrate==='function'){try{navigator.vibrate(12);}catch{}}
     }
-    document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){const row=e.target.closest('#market-body tr[data-coin]');if(row)navigate('detail',row.dataset.coin);return;}if(b.classList.contains('quick-action'))quickActionFeedback(b,e.isTrusted);if(b.dataset.currency){state.currency=b.dataset.currency;save();render();}else if(b.dataset.page)navigate(b.dataset.page);else if(b.dataset.coin)navigate('detail',b.dataset.coin);else if(b.dataset.card)navigate('card',b.dataset.card);else if(b.dataset.favorite){const id=b.dataset.favorite;state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];save();renderMarket();if(currentPage==='detail')renderDetail();}else if(b.dataset.chartMode)setChartMode(b.dataset.chartMode);else if(b.dataset.period){period=b.dataset.period;renderDetail();refreshCandles(coins.find(c=>c.id===currentCoin),period);syncChartStream();}else if(b.dataset.trade)tradeModal(b.dataset.trade);else if(b.dataset.action){switch(b.dataset.action){case 'visibility':state.hide=!state.hide;save();render();break;case 'transfer':case 'self':case 'topup':transferModal(b.dataset.action);break;case 'add-card':addCardModal();break;case 'qr-pay':qrScannerModal();break;case 'profile':profileModal();break;case 'help':helpModal();break;case 'history':historyExpanded=!historyExpanded;renderAccounts();break;case 'favorites-filter':favoritesOnly=!favoritesOnly;if(currentPage==='detail')navigate('crypto');else renderMarket();break;case 'notifications':openModal('Уведомления',`<div class="notice"><strong>Добро пожаловать в Patrn</strong><p>Ваше учебное пространство готово. Все карты и монеты доступны для знакомства.</p></div><div class="notice"><strong>Данные остаются с вами</strong><p>История и балансы сохраняются в этом браузере. Управлять демоданными можно в профиле.</p></div>`);break;}}});
+    document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){const row=e.target.closest('#market-body tr[data-coin]');if(row)navigate('detail',row.dataset.coin);return;}if(b.classList.contains('quick-action'))tapFeedback(b,e.isTrusted);if(b.dataset.currency){state.currency=b.dataset.currency;save();render();}else if(b.dataset.page)navigate(b.dataset.page);else if(b.dataset.coin)navigate('detail',b.dataset.coin);else if(b.dataset.card)navigate('card',b.dataset.card);else if(b.dataset.favorite){const id=b.dataset.favorite;state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];save();renderMarket();if(currentPage==='detail')renderDetail();}else if(b.dataset.chartMode)setChartMode(b.dataset.chartMode);else if(b.dataset.period){period=b.dataset.period;renderDetail();refreshCandles(coins.find(c=>c.id===currentCoin),period);syncChartStream();}else if(b.dataset.trade)tradeModal(b.dataset.trade);else if(b.dataset.action){switch(b.dataset.action){case 'visibility':state.hide=!state.hide;save();render();break;case 'transfer':case 'self':case 'topup':transferModal(b.dataset.action);break;case 'add-card':addCardModal();break;case 'qr-pay':qrScannerModal();break;case 'profile':profileModal();break;case 'help':helpModal();break;case 'history':historyExpanded=!historyExpanded;renderAccounts();break;case 'favorites-filter':favoritesOnly=!favoritesOnly;if(currentPage==='detail')navigate('crypto');else renderMarket();break;case 'notifications':openModal('Уведомления',`<div class="notice"><strong>Добро пожаловать в Patrn</strong><p>Ваше учебное пространство готово. Все карты и монеты доступны для знакомства.</p></div><div class="notice"><strong>Данные остаются с вами</strong><p>История и балансы сохраняются в этом браузере. Управлять демоданными можно в профиле.</p></div>`);break;}}});
     const LOCK_STORE = STORE+'-lock-v1';
     const encoder = new TextEncoder();
     const entry = $('#entry-lock');
@@ -2049,6 +2069,14 @@ Apache License
     function paintPin(){
       entryCells.forEach((cell,index)=>cell.classList.toggle('filled',index<entryPin.value.length));
       entryClear.disabled = !entryPin.value.length&&pendingPin===null;
+    }
+    async function rejectPin(message){
+      entryError.textContent = message;
+      entry.classList.add('entry-pin-rejected');
+      await new Promise(resolve=>setTimeout(resolve,420));
+      entry.classList.remove('entry-pin-rejected');
+      entryPin.value = '';
+      paintPin();
     }
     function renderEntry(){
       $('#entry-greeting').textContent = greetingForHour()+',';
@@ -2110,20 +2138,23 @@ Apache License
       if(entryPin.value.length===4)entryForm.requestSubmit();
     };
     for(const key of $$('[data-pin-digit]')){
-      key.onclick = ()=>{
+      key.onclick = event=>{
         if(entrySubmit.disabled||entryPin.value.length>=4)return;
+        tapFeedback(key,event.isTrusted);
         entryPin.value += key.dataset.pinDigit;
         entryPin.oninput();
       };
     }
-    entryClear.onclick = ()=>{
+    entryClear.onclick = event=>{
       if(entrySubmit.disabled)return;
+      tapFeedback(entryClear,event.isTrusted);
       if(entryPin.value.length)entryPin.value = entryPin.value.slice(0,-1);
       else pendingPin = null;
       entryError.textContent = '';
       renderEntry();
     };
-    entryHelp.onclick = ()=>{
+    entryHelp.onclick = event=>{
+      tapFeedback(entryHelp,event.isTrusted);
       entryHelpText.hidden = !entryHelpText.hidden;
       entryHelp.setAttribute('aria-expanded',String(!entryHelpText.hidden));
       entryHelpText.textContent = lockRecord
@@ -2145,12 +2176,6 @@ Apache License
         renderEntry();
         return;
       }
-      if(!lockRecord&&pin!==pendingPin){
-        entryPin.value = '';
-        paintPin();
-        entryError.textContent = 'Коды не совпадают. Повторите код.';
-        return;
-      }
       const remaining = Math.ceil(((lockRecord?.retryAt||0)-Date.now())/1000);
       if(remaining>0){
         entryPin.value = '';
@@ -2161,29 +2186,36 @@ Apache License
       deviceRequest?.abort();
       entrySubmit.disabled = true;
       entryDevice.disabled = true;
+      entryPin.readOnly = true;
       try{
         if(lockRecord){
           const hash = await hashPin(pin,decodeBytes(lockRecord.salt));
           if(hash!==lockRecord.hash){
             const failures = (lockRecord.failures||0)+1;
             saveLock({...lockRecord,failures:failures>=5 ? 0 : failures,retryAt:failures>=5 ? Date.now()+30000 : 0});
-            entryPin.value = '';
-            paintPin();
-            entryError.textContent = failures>=5 ? 'Слишком много попыток. Подождите 30 секунд.' : 'Неверный код.';
+            await rejectPin(failures>=5 ? 'Слишком много попыток. Подождите 30 секунд.' : 'Неверный код.');
             return;
           }
           saveLock({...lockRecord,failures:0,retryAt:0});
         }else{
+          if(pin!==pendingPin){
+            await rejectPin('Коды не совпадают. Повторите код.');
+            return;
+          }
           const salt = crypto.getRandomValues(new Uint8Array(16));
           saveLock({salt:encodeBytes(salt),hash:await hashPin(pin,salt),failures:0,retryAt:0});
         }
         renderEntry();
+        entry.classList.add('entry-pin-accepted');
+        await new Promise(resolve=>setTimeout(resolve,500));
         await unlockPatrn();
       }catch{
         entryPin.value = '';
         paintPin();
         entryError.textContent = 'Не удалось сохранить или проверить код. Откройте Patrn в браузере с доступом к локальным данным.';
       }finally{
+        entry.classList.remove('entry-pin-accepted');
+        entryPin.readOnly = false;
         entrySubmit.disabled = false;
         entryDevice.disabled = false;
       }
@@ -2260,8 +2292,9 @@ Apache License
         securityDevice.disabled = false;
       }
     };
-    entryDevice.onclick = async()=>{
+    entryDevice.onclick = async event=>{
       if(deviceRequest||entrySubmit.disabled)return;
+      tapFeedback(entryDevice,event.isTrusted);
       if(!lockRecord){
         entryError.textContent = 'Сначала создайте PIN. После входа настройка Face ID находится в разделе «Профиль → Вход».';
         return;

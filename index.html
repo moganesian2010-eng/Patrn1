@@ -60,6 +60,18 @@
     @keyframes screen-exit{to{transform:translateX(100%)}}
     @keyframes screen-recede{to{transform:translateX(-23%);opacity:.8}}
     @keyframes screen-return{from{transform:translateX(-23%);opacity:.8}}
+    .back-swipe-preview{
+      position:fixed;inset:0;z-index:17;overflow:hidden;pointer-events:none;
+      background:var(--bg);
+    }
+    .back-swipe-preview:has(#detail-page){background:var(--terminal-bg)}
+    .back-swipe-scroll{height:100%;overflow:hidden}
+    body:has(>.back-swipe-front){overflow-x:clip}
+    body>.main.back-swipe-front{
+      position:relative;z-index:18;min-height:100dvh;background:var(--bg);
+      user-select:none;
+    }
+    body>.main.back-swipe-front:has(#detail-page:not([hidden])){background:var(--terminal-bg)}
     /* Compact accounts and a persistent crypto balance. */
     #cards.cards{display:grid;grid-auto-flow:row;grid-template-columns:minmax(0,1fr);grid-auto-columns:auto;gap:0;overflow:visible;padding:0 var(--s4);margin:0 0 var(--s5);border:1px solid var(--line);border-radius:var(--r2);background:var(--surface)}
     .account-row{display:flex;align-items:center;gap:var(--s3);width:100%;min-height:68px;border:0;border-bottom:1px solid var(--line);padding:var(--s2) 0;background:transparent;text-align:left}.account-row:last-child{border-bottom:0}.account-row:hover{background:#ffffff04}.account-row.frozen{opacity:.6}.card-thumbnail{width:72px;height:46px;flex-shrink:0;border-radius:8px;object-fit:cover}.account-label{display:flex;flex-direction:column;gap:2px;min-width:0}.account-bank{font-size:13px;font-weight:550}.account-number{color:var(--muted);font-size:10px}.account-amount{margin-left:auto;font-size:16px;letter-spacing:-.4px;white-space:nowrap;font-variant-numeric:tabular-nums}.account-chevron{width:14px!important;height:14px!important;color:var(--muted)}
@@ -97,7 +109,7 @@
     .inline-chart.advanced+.chart-axis{padding-right:60px}
     :root{--terminal-bg:#10151f;--chart-up:#16df9a;--chart-down:#ff496c;--chart-sma:#ffbf32;--chart-marker:#36bfff}
     #crypto-page,#detail-page{--green:var(--chart-up);--red:var(--chart-down)}
-    body:has(#detail-page:not([hidden])){background:var(--terminal-bg)}
+    body:has(>.main>#detail-page:not([hidden])){background:var(--terminal-bg)}
     .main:has(#detail-page:not([hidden])){
       display:flex;flex-direction:column;min-height:100dvh;
     }
@@ -196,7 +208,7 @@
     .buy-form .form-error:empty{display:none}
     .coin-view .topbar{grid-template-columns:minmax(44px,1fr) minmax(0,max-content) minmax(max-content,1fr);gap:6px}
     .coin-view .topbar{margin-bottom:var(--s2)}
-    .main:has(#detail-page:not([hidden])){touch-action:pan-y}
+    .main:is(.card-view,.coin-view){touch-action:pan-y}
     .coin-view:has(#detail-page:not([hidden])) .topbar{background:transparent;backdrop-filter:none;pointer-events:none}
     .coin-view:has(#detail-page:not([hidden])) .topbar button{pointer-events:auto}
     .coin-view .coin-chart-title{
@@ -224,12 +236,16 @@
         padding-top:calc(var(--s2) + var(--coin-status-top,env(safe-area-inset-top)));
         padding-bottom:calc(var(--coin-trade-bottom) + 70px);
       }
-      body:has(#detail-page:not([hidden])) > .toast{bottom:calc(var(--coin-trade-bottom) + var(--coin-trade-clearance))}
+      body:has(>.main>#detail-page:not([hidden])) > .toast{bottom:calc(var(--coin-trade-bottom) + var(--coin-trade-clearance))}
       .coin-view .coin-trade{
         position:fixed;z-index:19;left:50%;bottom:var(--coin-trade-bottom);transform:translateX(-50%);
         width:min(480px,calc(100% - 32px));margin:0;padding:8px;
         border:.5px solid #ffffff0d;border-radius:var(--r2);background:var(--terminal-bg);
       }
+      .back-swipe-front .coin-trade,.back-swipe-scroll .coin-trade{
+        position:absolute;top:var(--swipe-trade-top);bottom:auto;
+      }
+      .back-swipe-scroll .main{position:relative}
     }
     html:has(#modal.qr-flow[open]){overflow:hidden}
     #modal.qr-flow{
@@ -1515,21 +1531,34 @@ Apache License
     }
     const screenParents = {card:'accounts',money:'accounts',detail:'crypto',buy:'detail'};
     const screenScroll = new Map();
+    const screenPreviews = new Map();
     let screenTransition = null;
     let screenFade = null;
-    function navigate(page,target){
+    function navigate(page,target,swiped=false){
       if(page==='card'&&!state.cards.some(item=>item.id===target))return;
+      clearBackSwipe();
       screenTransition?.skipTransition();
       screenTransition = null;
       screenFade?.cancel();
       const from = currentPage;
       const opening = screenParents[page]===from;
       const returning = screenParents[from]===page;
-      if(opening)screenScroll.set(from,Math.max(0,window.scrollY));
+      if(opening){
+        screenScroll.set(from,Math.max(0,window.scrollY));
+        if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+          const main = $('.main');
+          const preview = main.cloneNode(true);
+          for(const child of [...preview.children])if(child.hidden)child.remove();
+          positionSwipeTrade(main,preview);
+          screenPreviews.set(from,preview);
+        }
+      }
       const scrollTop = returning ? screenScroll.get(page) ?? 0 : 0;
+      if(returning)screenPreviews.delete(page);
+      else if(!opening&&page!==from)screenPreviews.clear();
       const root = document.documentElement;
       delete root.dataset.screenMotion;
-      const motion = page!==from&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const motion = !swiped&&page!==from&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(motion&&(opening||returning)&&document.startViewTransition&&!$('#modal').open){
         root.dataset.screenMotion = opening ? 'open' : 'back';
         const transition = document.startViewTransition(()=>{
@@ -2279,22 +2308,144 @@ Apache License
     window.addEventListener('scroll',()=>{if(!navScrollState.ticking){navScrollState.ticking=true;requestAnimationFrame(updateMobileNav);}},{passive:true});
     window.addEventListener('resize',resetMobileNav);
     $('.mobile-nav').addEventListener('focusin',resetMobileNav);
-    let coinSwipe=null;
-    function beginCoinSwipe(target,id,cx,cy){
-      if(currentPage!=='detail'||$('#modal').open||!target.closest('.main')||target.closest('button,input,select,textarea,a,[contenteditable]'))return null;
-      const chart=target.closest('.inline-chart');if(chart&&Number(chart.dataset.zoom)>1.001)return null;
-      return {id,x:cx,y:cy,lastX:cx,lastY:cy,time:performance.now()};
+    let backSwipe = null;
+
+    function positionSwipeTrade(main,layer){
+      const trade = main.querySelector('#detail-page:not([hidden]) .coin-trade');
+      if(trade&&getComputedStyle(trade).position==='fixed'){
+        layer.style.setProperty('--swipe-trade-top',`${trade.getBoundingClientRect().top-main.getBoundingClientRect().top}px`);
+      }
     }
-    function moveCoinSwipe(e,cx,cy){if(!coinSwipe)return;coinSwipe.lastX=cx;coinSwipe.lastY=cy;const dx=cx-coinSwipe.x,dy=cy-coinSwipe.y;if(dx>12&&dx>Math.abs(dy)*1.6&&e.cancelable)e.preventDefault();}
-    function finishCoinSwipe(){const swipe=coinSwipe;coinSwipe=null;if(!swipe||currentPage!=='detail'||$('#modal').open)return;const dx=swipe.lastX-swipe.x,dy=swipe.lastY-swipe.y;if(dx>=Math.max(64,Math.min(100,innerWidth*.18))&&dx>Math.abs(dy)*1.6&&performance.now()-swipe.time<1200)navigate('crypto');}
-    document.addEventListener('touchstart',e=>{if(e.touches.length!==1){coinSwipe=null;return;}const t=e.touches[0];coinSwipe=beginCoinSwipe(e.target,t.identifier,t.clientX,t.clientY);},{passive:true,capture:true});
-    document.addEventListener('touchmove',e=>{if(!coinSwipe)return;if(e.touches.length!==1){coinSwipe=null;return;}const t=[...e.touches].find(t=>t.identifier===coinSwipe.id);if(t){coinSwipe.lastX=t.clientX;coinSwipe.lastY=t.clientY;}},{passive:true});
-    document.addEventListener('touchend',e=>{if(e.touches.length){coinSwipe=null;return;}if(coinSwipe){const t=[...e.changedTouches].find(t=>t.identifier===coinSwipe.id);if(t){coinSwipe.lastX=t.clientX;coinSwipe.lastY=t.clientY;}}finishCoinSwipe();},{passive:true});
-    document.addEventListener('touchcancel',()=>{coinSwipe=null;},{passive:true});
-    document.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button===0)coinSwipe=beginCoinSwipe(e.target,e.pointerId,e.clientX,e.clientY);});
-    document.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&coinSwipe?.id===e.pointerId)moveCoinSwipe(e,e.clientX,e.clientY);});
-    document.addEventListener('pointerup',e=>{if(e.pointerType==='mouse'&&coinSwipe?.id===e.pointerId){moveCoinSwipe(e,e.clientX,e.clientY);finishCoinSwipe();}});
-    document.addEventListener('pointercancel',e=>{if(e.pointerType==='mouse')coinSwipe=null;});
+
+    function clearBackSwipe(){
+      const swipe = backSwipe;
+      backSwipe = null;
+      if(!swipe?.behind)return;
+      cancelAnimationFrame(swipe.frame);
+      for(const animation of swipe.animations ?? [])animation.cancel();
+      swipe.behind.remove();
+      swipe.front.classList.remove('back-swipe-front');
+      swipe.front.style.removeProperty('transform');
+      swipe.front.style.removeProperty('--swipe-trade-top');
+    }
+
+    function beginBackSwipe(target,id,x,y){
+      const parent = screenParents[currentPage];
+      const main = target.closest('.main');
+      if(!parent||!main||backSwipe?.behind||screenTransition||$('#modal').open||!$('#entry-lock').hidden)return;
+      if(target.closest('button,input,select,textarea,a,[contenteditable]'))return;
+      const chart = target.closest('.inline-chart');
+      if(chart&&Number(chart.dataset.zoom)>1.001)return;
+      backSwipe = {id,x,y,parent,front:main,width:document.documentElement.clientWidth,offset:0,frame:0};
+    }
+
+    function previewOffset(swipe,offset){return (offset-swipe.width)*.23;}
+    function translateSwipe(offset){return `translate3d(${offset}px,0,0)`;}
+
+    function paintBackSwipe(swipe){
+      swipe.front.style.transform = translateSwipe(swipe.offset);
+      swipe.behind.style.transform = translateSwipe(previewOffset(swipe,swipe.offset));
+    }
+
+    function showBackPreview(swipe,preview){
+      const behind = document.createElement('div');
+      const scroll = document.createElement('div');
+      behind.className = 'back-swipe-preview';
+      behind.setAttribute('aria-hidden','true');
+      behind.inert = true;
+      scroll.className = 'back-swipe-scroll';
+      scroll.append(preview);
+      behind.append(scroll);
+      document.body.append(behind);
+      scroll.scrollTop = screenScroll.get(swipe.parent) ?? 0;
+      swipe.behind = behind;
+      positionSwipeTrade(swipe.front,swipe.front);
+      swipe.front.classList.add('back-swipe-front');
+      paintBackSwipe(swipe);
+    }
+
+    function moveBackSwipe(id,x,y){
+      const swipe = backSwipe;
+      if(swipe?.id!==id||swipe.settling)return;
+      const dx = x-swipe.x,dy = y-swipe.y;
+      if(!swipe.started){
+        if(Math.abs(dy)>12&&Math.abs(dy)>=Math.abs(dx)||dx < -12){clearBackSwipe();return;}
+        if(dx<12||dx<=Math.abs(dy)*1.5)return;
+        swipe.started = true;
+      }
+      swipe.offset = Math.min(swipe.width,Math.max(0,dx));
+      if(!swipe.behind){
+        const preview = screenPreviews.get(swipe.parent);
+        if(preview&&!matchMedia('(prefers-reduced-motion: reduce)').matches)showBackPreview(swipe,preview);
+        return;
+      }
+      if(!swipe.frame)swipe.frame = requestAnimationFrame(()=>{
+        swipe.frame = 0;
+        paintBackSwipe(swipe);
+      });
+    }
+
+    function finishBackSwipe(cancelled=false){
+      const swipe = backSwipe;
+      if(!swipe||swipe.settling)return;
+      const close = !cancelled&&swipe.offset>=swipe.width/2;
+      if(!swipe.behind){
+        clearBackSwipe();
+        if(close)navigate(swipe.parent,undefined,true);
+        return;
+      }
+      swipe.settling = true;
+      cancelAnimationFrame(swipe.frame);
+      paintBackSwipe(swipe);
+      const end = close ? swipe.width : 0;
+      const timing = {duration:220,easing:'cubic-bezier(.22,.72,.24,1)',fill:'forwards'};
+      swipe.animations = [
+        swipe.front.animate([{transform:translateSwipe(swipe.offset)},{transform:translateSwipe(end)}],timing),
+        swipe.behind.animate([{transform:translateSwipe(previewOffset(swipe,swipe.offset))},{transform:translateSwipe(previewOffset(swipe,end))}],timing),
+      ];
+      swipe.animations[0].finished.then(()=>{
+        if(backSwipe!==swipe)return;
+        clearBackSwipe();
+        if(close)navigate(swipe.parent,undefined,true);
+      },()=>{});
+    }
+
+    document.addEventListener('touchstart',event=>{
+      if(event.touches.length!==1){finishBackSwipe(true);return;}
+      const touch=event.touches[0];
+      beginBackSwipe(event.target,touch.identifier,touch.clientX,touch.clientY);
+    },{passive:true,capture:true});
+    document.addEventListener('touchmove',event=>{
+      if(event.touches.length!==1)return;
+      const touch=event.touches[0];
+      moveBackSwipe(touch.identifier,touch.clientX,touch.clientY);
+    },{passive:true});
+    document.addEventListener('touchend',event=>{
+      if(event.touches.length)return;
+      const touch=[...event.changedTouches].find(item=>item.identifier===backSwipe?.id);
+      if(touch){
+        moveBackSwipe(touch.identifier,touch.clientX,touch.clientY);
+        finishBackSwipe();
+      }
+    },{passive:true});
+    document.addEventListener('touchcancel',()=>finishBackSwipe(true),{passive:true});
+    document.addEventListener('pointerdown',event=>{
+      if(event.pointerType==='mouse'&&event.button===0)beginBackSwipe(event.target,event.pointerId,event.clientX,event.clientY);
+    });
+    document.addEventListener('pointermove',event=>{
+      if(event.pointerType==='mouse')moveBackSwipe(event.pointerId,event.clientX,event.clientY);
+    });
+    document.addEventListener('pointerup',event=>{
+      if(event.pointerType==='mouse'&&backSwipe?.id===event.pointerId){
+        moveBackSwipe(event.pointerId,event.clientX,event.clientY);
+        finishBackSwipe();
+      }
+    });
+    document.addEventListener('pointercancel',event=>{if(event.pointerType==='mouse')finishBackSwipe(true);});
+    document.addEventListener('click',event=>{
+      if(backSwipe?.behind){event.preventDefault();event.stopImmediatePropagation();}
+    },true);
+    window.addEventListener('resize',clearBackSwipe);
     function tapFeedback(button,trusted){
       if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&typeof button.animate==='function')button.animate([{transform:'scale(.965)'},{transform:'scale(1)'}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)'});
       if(trusted&&typeof navigator.vibrate==='function'){try{navigator.vibrate(12);}catch{}}

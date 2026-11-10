@@ -21,6 +21,45 @@
     @media(min-width:1000px){.footer .footer-mark{display:flex}}
     @media(max-width:599px){#accounts-page .panel{padding:var(--s4)}.panel-head{gap:var(--s2)}.panel-head h2{font-size:16px}.panel-head .text-btn{font-size:12px;white-space:nowrap}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+    :root{--screen-motion:240ms;--screen-ease:cubic-bezier(.22,.72,.24,1)}
+    @media(prefers-reduced-motion:no-preference){
+      .mobile-nav{view-transition-name:bottom-navigation}
+      .sidebar{view-transition-name:side-navigation}
+      ::view-transition{pointer-events:none}
+      ::view-transition-group(bottom-navigation),::view-transition-group(side-navigation){
+        z-index:1;animation:none;
+      }
+      ::view-transition-old(bottom-navigation),::view-transition-old(side-navigation){display:none}
+      ::view-transition-new(bottom-navigation),::view-transition-new(side-navigation){animation:none}
+      html[data-screen-motion]::view-transition-old(root),html[data-screen-motion]::view-transition-new(root){
+        animation-duration:var(--screen-motion);animation-timing-function:var(--screen-ease);
+        animation-fill-mode:both;mix-blend-mode:normal;
+      }
+      html[data-screen-motion="open"]::view-transition-old(root){animation-name:screen-recede}
+      html[data-screen-motion="open"]::view-transition-new(root){animation-name:screen-enter;z-index:1}
+      html[data-screen-motion="back"]::view-transition-old(root){animation-name:screen-exit;z-index:1}
+      html[data-screen-motion="back"]::view-transition-new(root){animation-name:screen-return}
+      #modal{
+        opacity:0;transform:translateY(var(--s4));
+        transition:opacity var(--screen-motion) var(--screen-ease),transform var(--screen-motion) var(--screen-ease),
+          display var(--screen-motion) allow-discrete,overlay var(--screen-motion) allow-discrete;
+      }
+      #modal[open]{opacity:1;transform:none}
+      #modal:not([open]){pointer-events:none}
+      #modal::backdrop{
+        opacity:0;transition:opacity var(--screen-motion),display var(--screen-motion) allow-discrete,
+          overlay var(--screen-motion) allow-discrete;
+      }
+      #modal[open]::backdrop{opacity:1}
+      @starting-style{
+        #modal[open]{opacity:0;transform:translateY(var(--s4))}
+        #modal[open]::backdrop{opacity:0}
+      }
+    }
+    @keyframes screen-enter{from{transform:translateX(100%)}}
+    @keyframes screen-exit{to{transform:translateX(100%)}}
+    @keyframes screen-recede{to{transform:translateX(-23%);opacity:.8}}
+    @keyframes screen-return{from{transform:translateX(-23%);opacity:.8}}
     /* Compact accounts and a persistent crypto balance. */
     #cards.cards{display:grid;grid-auto-flow:row;grid-template-columns:minmax(0,1fr);grid-auto-columns:auto;gap:0;overflow:visible;padding:0 var(--s4);margin:0 0 var(--s5);border:1px solid var(--line);border-radius:var(--r2);background:var(--surface)}
     .account-row{display:flex;align-items:center;gap:var(--s3);width:100%;min-height:68px;border:0;border-bottom:1px solid var(--line);padding:var(--s2) 0;background:transparent;text-align:left}.account-row:last-child{border-bottom:0}.account-row:hover{background:#ffffff04}.account-row.frozen{opacity:.6}.card-thumbnail{width:72px;height:46px;flex-shrink:0;border-radius:8px;object-fit:cover}.account-label{display:flex;flex-direction:column;gap:2px;min-width:0}.account-bank{font-size:13px;font-weight:550}.account-number{color:var(--muted);font-size:10px}.account-amount{margin-left:auto;font-size:16px;letter-spacing:-.4px;white-space:nowrap;font-variant-numeric:tabular-nums}.account-chevron{width:14px!important;height:14px!important;color:var(--muted)}
@@ -42,7 +81,7 @@
     @media(max-width:599px){.chart-modal{padding:var(--s4)}.chart-modal .modal-head h2{font-size:18px}.chart-tools{gap:4px}.chart-tools .periods button{min-width:32px}.chart-expand{padding:0 8px}}
     /* A single sliding selection pill inside the floating tab bar. */
     :root{--mobile-nav-bottom:max(26px,calc(env(safe-area-inset-bottom) + 8px));--mobile-nav-height:69.246px;--mobile-nav-scale:.79475}
-    .mobile-nav{--nav-index:0;--nav-inset:5.82px;left:50%;right:auto;bottom:var(--mobile-nav-bottom);transform:translateX(-50%) scale(var(--mobile-nav-scale));transform-origin:center bottom;transition:transform 480ms cubic-bezier(.22,.61,.36,1);width:calc(101.8325% - 32.5864px);max-width:366.6px;height:var(--mobile-nav-height);padding:var(--nav-inset);gap:0;isolation:isolate;overflow:hidden;border:1px solid #ffffff19;border-radius:37.82px;background:#18233bd9;backdrop-filter:blur(24px) saturate(145%);-webkit-backdrop-filter:blur(24px) saturate(145%);box-shadow:0 8px 28px #00000030,inset 0 1px 0 #ffffff0b}
+    .mobile-nav{--nav-index:0;--nav-inset:5.82px;left:50%;right:auto;bottom:var(--mobile-nav-bottom);transform:translateX(-50%) scale(var(--mobile-nav-scale));transform-origin:center bottom;transition:transform 480ms cubic-bezier(.22,.61,.36,1);width:calc(101.8325% - 32.5864px);max-width:366.6px;height:var(--mobile-nav-height);padding:var(--nav-inset);gap:0;isolation:isolate;overflow:hidden;border:1px solid #ffffff19;border-radius:37.82px;background:#18233bd9;backdrop-filter:blur(12px) saturate(130%);-webkit-backdrop-filter:blur(12px) saturate(130%);box-shadow:0 8px 28px #00000030,inset 0 1px 0 #ffffff0b}
     .mobile-nav.nav-compact{transform:translateX(-50%) scale(calc(var(--mobile-nav-scale) * .8))}
     .mobile-nav .nav-pill{position:absolute;left:var(--nav-inset);top:var(--nav-inset);width:calc((100% - 2 * var(--nav-inset)) / 3);height:calc(100% - 2 * var(--nav-inset));border:1px solid #ffffff18;border-radius:32px;background:linear-gradient(180deg,#ffffff1c,#ffffff10);box-shadow:0 2px 8px #00000020;transform:translateX(calc(var(--nav-index)*100%));transition:transform 360ms cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:-1;will-change:transform}
     .mobile-nav .nav-btn{position:relative;flex:1;min-width:0;min-height:0;height:100%;padding:2.91px 8.73px;gap:1.45px;border-radius:32px;color:#9daac0;font-size:15.74px;line-height:1.2;font-weight:500;background:transparent;transition:color 220ms ease-out}
@@ -85,6 +124,7 @@
     }
     .terminal-quote .detail-price{font-size:clamp(23px,6vw,38px);line-height:1.15;font-weight:650;letter-spacing:-.025em;margin:3px 0;overflow-wrap:anywhere}
     .terminal-quote .detail-price small{font-size:.38em;letter-spacing:.03em}
+    .terminal-quote .detail-price,[data-market-price],.market-table .table-change{font-variant-numeric:tabular-nums}
     .terminal-quote dl{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);margin:0;font-size:11px}
     @media(min-width:600px){
       .terminal-quote{grid-template-columns:auto auto minmax(0,1fr)}
@@ -132,25 +172,31 @@
     #detail-page .coin-trade [data-trade="buy"]{color:#081510;background:var(--chart-up)}
     #detail-page .coin-trade [data-trade="sell"]{color:#260a10;background:var(--chart-down);border:0}
     #detail-page .coin-trade button:hover:not(:disabled){filter:brightness(1.1)}
-    #buy-page{max-width:560px;margin-inline:auto}
-    .buy-form{display:grid;gap:var(--s5)}
-    .buy-form fieldset{min-width:0;margin:0;padding:0;border:0}
-    .buy-form legend,.buy-form .field{font-size:14px;font-weight:600;color:var(--text)}
-    .buy-form .field,.buy-form .trade-estimate{margin:0}
-    .buy-cards{display:grid;gap:var(--s2);margin-top:var(--s2)}
-    .buy-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s3);min-height:68px;padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:var(--r1);background:var(--surface);cursor:pointer}
-    .buy-card:has(input:checked){border-color:var(--accent);background:var(--surface2)}
-    .buy-card:has(input:focus-visible){outline:2px solid var(--accent-light);outline-offset:2px}
-    .buy-card input{margin:0;accent-color:var(--accent-light)}
-    .buy-card .card-thumbnail{width:64px;height:auto}
-    .buy-card strong,.buy-card small{display:block}
-    .buy-card small{color:var(--muted);font-size:11px}
+    #buy-page,#money-page{max-width:560px;margin-inline:auto}
+    .buy-form,.money-form{display:grid;gap:var(--s5)}
+    :is(.buy-form,.money-form) fieldset{min-width:0;margin:0;padding:0;border:0}
+    :is(.buy-form,.money-form) :is(legend,.field){font-size:14px;font-weight:600;color:var(--text)}
+    :is(.buy-form,.money-form) .field,.buy-form .trade-estimate,.money-form .form-note{margin:0}
+    .money-form .form-error:empty{display:none}
+    .main:has(#money-page:not([hidden])){padding-top:calc(var(--s4) + var(--coin-status-top,env(safe-area-inset-top)))}
+    .card-choices{display:grid;gap:var(--s2);margin-top:var(--s2)}
+    .card-choice{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s3);min-height:68px;padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:var(--r1);background:var(--surface);cursor:pointer}
+    .card-choice:has(input:checked){border-color:var(--accent);background:var(--surface2)}
+    .card-choice:has(input:focus-visible){outline:2px solid var(--accent-light);outline-offset:2px}
+    .card-choice input{margin:0;accent-color:var(--accent-light)}
+    .card-choice .card-thumbnail{width:64px;height:auto}
+    .card-choice strong,.card-choice small{display:block}
+    .card-choice small{color:var(--muted);font-size:11px}
     .buy-form .amount-buttons{margin:var(--s2) 0 0}
     .buy-form .amount-buttons button{min-height:44px}
+    .buy-unit-switch{width:fit-content;margin-bottom:var(--s3)}
+    .buy-unit-switch button{min-height:44px}
+    .buy-unit-switch button[aria-pressed="true"]{background:var(--surface2);color:var(--text)}
     .buy-total{margin-top:var(--s2);padding-top:var(--s2);border-top:1px solid var(--line);font-size:14px}
     .buy-form .form-error:empty{display:none}
     .coin-view .topbar{grid-template-columns:minmax(44px,1fr) minmax(0,max-content) minmax(max-content,1fr);gap:6px}
     .coin-view .topbar{margin-bottom:var(--s2)}
+    .main:has(#detail-page:not([hidden])){touch-action:pan-y}
     .coin-view:has(#detail-page:not([hidden])) .topbar{background:transparent;backdrop-filter:none;pointer-events:none}
     .coin-view:has(#detail-page:not([hidden])) .topbar button{pointer-events:auto}
     .coin-view .coin-chart-title{
@@ -185,10 +231,44 @@
         border:.5px solid #ffffff0d;border-radius:var(--r2);background:var(--terminal-bg);
       }
     }
-    .qr-video{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#080f21;border:1px solid var(--line);border-radius:var(--r1)}
-    .qr-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:var(--s4) 0}
-    .qr-controls button{padding-inline:var(--s2)}
-    .qr-status{min-height:2.8em;margin:var(--s2) 0;color:var(--muted);font-size:12px}
+    html:has(#modal.qr-flow[open]){overflow:hidden}
+    #modal.qr-flow{
+      --qr-top:max(var(--s2),var(--coin-status-top,env(safe-area-inset-top)));
+      --qr-bottom:max(var(--s5),calc(env(safe-area-inset-bottom) + var(--s4)));
+      inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;
+      border:0;border-radius:0;background:var(--bg);overscroll-behavior:contain;
+    }
+    .qr-flow .modal-head{
+      position:absolute;z-index:1;inset:0 0 auto;margin:0;
+      padding:var(--qr-top) var(--s4) var(--s2);
+    }
+    .qr-flow .modal-head h2{font-size:20px}
+    .qr-flow #modal-body{height:100%}
+    .qr-camera-view{
+      position:relative;isolation:isolate;display:grid;place-items:center;
+      height:100%;overflow:hidden;background:#080f21;
+    }
+    .qr-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .qr-camera-view::after{
+      content:"";position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(#03091ecc,transparent 28%,transparent 68%,#03091ecc);
+    }
+    .qr-scan-frame{
+      position:relative;z-index:1;width:min(64vw,280px,46dvh);aspect-ratio:1;
+      border:2px solid #ffffff99;border-radius:var(--r3);pointer-events:none;
+    }
+    .qr-status{
+      position:absolute;z-index:1;inset:auto var(--s4) var(--qr-bottom);
+      margin:0;text-align:center;color:var(--text);
+    }
+    #qr-pay-form{
+      display:flex;flex-direction:column;min-height:100%;width:min(100%,560px);margin:auto;
+      padding:calc(var(--qr-top) + 64px) var(--s4) var(--qr-bottom);
+    }
+    .qr-payment-summary{text-align:center;margin:var(--s4) 0 var(--s6)}
+    .qr-payment-summary p{margin:0;color:var(--muted)}
+    .qr-payment-summary .total{font-size:clamp(26px,7vw,44px)}
+    .qr-pay-actions{margin-top:auto}
     @media(max-width:999px){.main{padding-top:calc(var(--s4) + env(safe-area-inset-top))}}
     .launch-screen{
       position:fixed;inset:0;z-index:110;display:grid;place-items:center;
@@ -508,6 +588,7 @@
     <section id="detail-page" hidden></section>
     <section id="buy-page" aria-labelledby="coin-chart-title" hidden></section>
     <section id="card-page" aria-labelledby="card-title" hidden></section>
+    <section id="money-page" aria-labelledby="card-title" hidden></section>
     <section id="profile-page" aria-labelledby="profile-heading" hidden>
       <div class="profile-summary">
         <button type="button" class="profile-photo-button" id="profile-photo-button">
@@ -808,11 +889,16 @@ Apache License
       return s;}catch{return initialState();}}
     let state=loadState(),currentPage='accounts',currentCoin='btc',currentCard=null,historyExpanded=false,favoritesOnly=false,sortDirection=0,period='1Н',toastTimer,storageWarned=false;
     function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch{if(!storageWarned){storageWarned=true;setTimeout(()=>toast('Браузер не разрешает сохранять данные. Изменения доступны до закрытия страницы.'),200);}}}
-    function number(v,d=2){return new Intl.NumberFormat('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);}
+    const numberFormats = new Map();
+    const quantityFormat = new Intl.NumberFormat('ru-RU',{maximumFractionDigits:8});
+    function number(v,d=2){
+      if(!numberFormats.has(d))numberFormats.set(d,new Intl.NumberFormat('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}));
+      return numberFormats.get(d).format(v);
+    }
     function rub(cents){return `${number(cents/100)} ₽`;}
     function money(cents,hidden=true){if(hidden&&state.hide)return '••• •••';return state.currency==='USD'?`${number(cents/100/USD_RATE)} $`:rub(cents);}
     function dollar(v){return `${number(v,v<2?4:2)} $`;}
-    function quantity(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:8}).format(n);}
+    function quantity(n){return quantityFormat.format(n);}
     function change(c){return `${c.change>=0?'+':''}${number(c.change)}%`;}
     function coinIcon(c){return `<span class="coin-icon" style="background:${c.color}" aria-hidden="true">${c.sign}</span>`;}
     function coinValue(c){return Math.round((state.holdings[c.id]||0)*c.price*USD_RATE*100);}
@@ -886,7 +972,7 @@ Apache License
         tickerFailed=true;
       }finally{
         tickerPending=false;
-        if(currentPage==='crypto')renderMarket();
+        if(currentPage==='crypto')updateMarketTickers();
         if(currentPage==='detail')renderDetailQuote();
       }
     }
@@ -1221,11 +1307,17 @@ Apache License
       </g>`;
       return {svg,axis};
     }
+    const chartTimeFormats = {
+      day:new Intl.DateTimeFormat('ru-RU',{hour:'2-digit',minute:'2-digit'}),
+      year:new Intl.DateTimeFormat('ru-RU',{month:'short',year:'2-digit'}),
+      date:new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short'}),
+    };
+    const operationTimeFormat = new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     function candleTimeLabel(p,data,index){
       const i=Math.min(data.length-1,Math.max(0,Math.round(index)));
       if(data[i].time){
-        const options=p==='1Д'?{hour:'2-digit',minute:'2-digit'}:p==='1Г'?{month:'short',year:'2-digit'}:{day:'numeric',month:'short'};
-        return new Intl.DateTimeFormat('ru-RU',options).format(data[i].time);
+        const formatter = p==='1Д' ? chartTimeFormats.day : p==='1Г' ? chartTimeFormats.year : chartTimeFormats.date;
+        return formatter.format(data[i].time);
       }
       const f=i/(data.length-1);
       const labels={'1Д':['00:00','06:00','12:00','18:00','23:59'],'1Н':['Пн','Вт','Чт','Пт','Вс'],'1М':['1-я нед.','2-я нед.','3-я нед.','4-я нед.'],'1Г':['Янв','Апр','Июл','Окт','Дек']}[p];
@@ -1250,24 +1342,45 @@ Apache License
       $('#transaction-search-list').innerHTML = matches.map(transactionHtml).join('');
       $('#transaction-search-empty').hidden = matches.length>0;
     }
-    function transactionHtml(t){const amount=state.hide?'•••':t.amount===0?'Между счетами':`${t.amount>0?'+':''}${money(t.amount,false)}`;return `<div class="transaction"><span class="tx-icon ${t.amount>0?'up':''}">${icon(['bag','plus','crypto','swap','arrow','qr'].includes(t.kind)?t.kind:'arrow')}</span><div class="tx-info"><div class="tx-name">${esc(t.name)}</div><div class="tx-date">${new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(t.date)}</div>${t.note?`<div class="tx-note muted small">${esc(t.note)}</div>`: ''}</div><div class="tx-amount ${t.amount>0?'up':''}">${amount}<small>${esc(t.detail)}</small></div></div>`;}
-    function renderMarket(){const total=coins.reduce((s,c)=>s+coinValue(c),0);$('#portfolio-value').textContent=money(total);const toggle=$('#favorites-toggle');toggle.classList.toggle('active',favoritesOnly);toggle.setAttribute('aria-pressed',String(favoritesOnly));toggle.setAttribute('aria-label',favoritesOnly?'Показать все монеты':'Показать избранные монеты');const query = $('#market-search').value.trim().toLowerCase();
-      const source=marketQuotes.size?(tickerFailed?'Bybit · данные могут устареть':'Bybit Spot'):(tickerFailed?'Bybit недоступен · демо':'Bybit · загрузка');
-      if($('#market-source').textContent!==source)$('#market-source').textContent=source;
+    function transactionHtml(t){const amount=state.hide?'•••':t.amount===0?'Между счетами':`${t.amount>0?'+':''}${money(t.amount,false)}`;return `<div class="transaction"><span class="tx-icon ${t.amount>0?'up':''}">${icon(['bag','plus','crypto','swap','arrow','qr'].includes(t.kind)?t.kind:'arrow')}</span><div class="tx-info"><div class="tx-name">${esc(t.name)}</div><div class="tx-date">${operationTimeFormat.format(t.date)}</div>${t.note?`<div class="tx-note muted small">${esc(t.note)}</div>`: ''}</div><div class="tx-amount ${t.amount>0?'up':''}">${amount}<small>${esc(t.detail)}</small></div></div>`;}
+    function renderMarket(){renderMarketSummary();const toggle=$('#favorites-toggle');toggle.classList.toggle('active',favoritesOnly);toggle.setAttribute('aria-pressed',String(favoritesOnly));toggle.setAttribute('aria-label',favoritesOnly?'Показать все монеты':'Показать избранные монеты');const query = $('#market-search').value.trim().toLowerCase();
       const list = coins.filter(coin=>{
         const matchesQuery = coin.name.toLowerCase().includes(query)||coin.symbol.toLowerCase().includes(query);
         return matchesQuery&&(!favoritesOnly||state.favorites.includes(coin.id));
       });
       const empty = $('#favorites-empty');
       empty.textContent = query ? 'Монеты не найдены.' : 'В избранном пока нет монет. Нажмите звёздочку ещё раз, чтобы увидеть весь список.';
-      empty.hidden = list.length>0;if(sortDirection)list.sort((a,b)=>(quoteFor(b).change-quoteFor(a).change)*sortDirection);$('#sort-change').textContent=`24 ч. ${sortDirection===1?'↓':sortDirection===-1?'↑':'↕'}`;$('#market-body').innerHTML=list.map(c=>{const q=quoteFor(c);return `<tr data-coin="${c.id}"><td class="rank muted">${coins.indexOf(c)+1}</td><td><button class="coin-open" data-coin="${c.id}">${coinIcon(c)}<span><span class="coin-name">${c.name}</span><span class="coin-symbol" style="display:block">${c.symbol}</span></span></button></td><td class="right">${marketPrice(q)}<span class="market-quote-unit">${q.unit||'демо'}</span></td><td class="right table-change ${q.change>=0?'up':'down'}">${change(q)}</td><td class="chart-column right">${marketSparkline(c)}</td><td class="holding-column right">${state.hide?'•••':quantity(state.holdings[c.id]||0)}<span class="coin-symbol" style="display:block">${money(coinValue(c))}</span></td><td><button class="favorite ${state.favorites.includes(c.id)?'selected':''}" data-favorite="${c.id}" aria-label="${state.favorites.includes(c.id)?'Убрать':'Добавить'} ${c.name} ${state.favorites.includes(c.id)?'из избранного':'в избранное'}" aria-pressed="${state.favorites.includes(c.id)}">${icon('star')}</button></td></tr>`;}).join('');}
+      empty.hidden = list.length>0;if(sortDirection)list.sort((a,b)=>(quoteFor(b).change-quoteFor(a).change)*sortDirection);$('#sort-change').textContent=`24 ч. ${sortDirection===1?'↓':sortDirection===-1?'↑':'↕'}`;$('#market-body').innerHTML=list.map(c=>{const q=quoteFor(c);return `<tr data-coin="${c.id}"><td class="rank muted">${coins.indexOf(c)+1}</td><td><button class="coin-open" data-coin="${c.id}">${coinIcon(c)}<span><span class="coin-name">${c.name}</span><span class="coin-symbol" style="display:block">${c.symbol}</span></span></button></td><td class="right"><span data-market-price>${marketPrice(q)}</span><span class="market-quote-unit">${q.unit||'демо'}</span></td><td class="right table-change ${q.change>=0?'up':'down'}">${change(q)}</td><td class="chart-column right">${marketSparkline(c)}</td><td class="holding-column right">${state.hide?'•••':quantity(state.holdings[c.id]||0)}<span class="coin-symbol" data-market-value style="display:block">${money(coinValue(c))}</span></td><td><button class="favorite ${state.favorites.includes(c.id)?'selected':''}" data-favorite="${c.id}" aria-label="${state.favorites.includes(c.id)?'Убрать':'Добавить'} ${c.name} ${state.favorites.includes(c.id)?'из избранного':'в избранное'}" aria-pressed="${state.favorites.includes(c.id)}">${icon('star')}</button></td></tr>`;}).join('');}
+    function renderMarketSummary(){
+      const total=coins.reduce((sum,coin)=>sum+coinValue(coin),0);
+      const balance=$('#portfolio-value'),value=money(total);
+      if(balance.textContent!==value)balance.textContent=value;
+      const source=marketQuotes.size?(tickerFailed?'Bybit · данные могут устареть':'Bybit Spot'):(tickerFailed?'Bybit недоступен · демо':'Bybit · загрузка');
+      if($('#market-source').textContent!==source)$('#market-source').textContent=source;
+    }
+    function updateMarketTickers(){
+      if(sortDirection){renderMarket();return;}
+      renderMarketSummary();
+      for(const row of $$('#market-body tr[data-coin]')){
+        const coin=coins.find(item=>item.id===row.dataset.coin),quote=quoteFor(coin);
+        const price=row.querySelector('[data-market-price]');
+        const unit=row.querySelector('.market-quote-unit');
+        const trend=row.querySelector('.table-change');
+        const value=row.querySelector('[data-market-value]');
+        for(const [cell,text] of [[price,marketPrice(quote)],[unit,quote.unit||'демо'],[trend,change(quote)],[value,money(coinValue(coin))]]){
+          if(cell.textContent!==text)cell.textContent=text;
+        }
+        trend.classList.toggle('up',quote.change>=0);
+        trend.classList.toggle('down',quote.change<0);
+      }
+    }
+    const compactQuoteFormat = new Intl.NumberFormat('ru-RU',{notation:'compact',maximumFractionDigits:2});
     function terminalQuoteStats(quote){
       const {high,low,turnover}=quote;
-      const compact = new Intl.NumberFormat('ru-RU',{notation:'compact',maximumFractionDigits:2});
       return `
           <div><dt>Макс. 24 ч.</dt><dd>${chartPrice(high,quote)}</dd></div>
           <div><dt>Мин. 24 ч.</dt><dd>${chartPrice(low,quote)}</dd></div>
-          <div><dt>Оборот, ${quote.unit||'USD'}</dt><dd>${compact.format(turnover)}</dd></div>`;
+          <div><dt>Оборот, ${quote.unit||'USD'}</dt><dd>${compactQuoteFormat.format(turnover)}</dd></div>`;
     }
     function renderDetailQuote(){
       const coin=coins.find(c=>c.id===currentCoin),quote=marketQuotes.get(coin.id);
@@ -1312,17 +1425,20 @@ Apache License
       button.setAttribute('aria-pressed',String(chartPercent));
     }
 
+    function renderDetailFavorite(){
+      const favorite = state.favorites.includes(currentCoin);
+      const favoriteButton = $('#detail-favorite');
+      favoriteButton.dataset.favorite = currentCoin;
+      favoriteButton.classList.toggle('selected',favorite);
+      favoriteButton.setAttribute('aria-pressed',String(favorite));
+      favoriteButton.setAttribute('aria-label',favorite?'Убрать из избранного':'Добавить в избранное');
+    }
     function renderDetail(){
       const c = coins.find(coin=>coin.id===currentCoin);
       const held = state.holdings[c.id]||0;
       const beginnerChart = state.chartMode==='beginner';
       $('#coin-chart-title').innerHTML=`${coinIcon(c)}<span class="coin-chart-name">${c.symbol}/${quoteUnit(c)}</span>`;
-      const favorite = state.favorites.includes(c.id);
-      const favoriteButton = $('#detail-favorite');
-      favoriteButton.dataset.favorite = c.id;
-      favoriteButton.classList.toggle('selected',favorite);
-      favoriteButton.setAttribute('aria-pressed',String(favorite));
-      favoriteButton.setAttribute('aria-label',favorite?'Убрать из избранного':'Добавить в избранное');
+      renderDetailFavorite();
       const tradeButtons = `<div class="trade-buttons coin-trade" role="group" aria-label="Учебная сделка"><button class="primary" data-trade="buy">Купить</button><button class="primary secondary" data-trade="sell" ${held<=0?'disabled':''}>Продать</button></div>`;
       $('#detail-page').innerHTML = `
         <div class="panel terminal-chart${beginnerChart?' beginner-chart':''}">
@@ -1383,20 +1499,70 @@ Apache License
     function greetingForHour(hour=new Date().getHours()){
       return hour<5?'Доброй ночи':hour<12?'Доброе утро':hour<18?'Добрый день':'Добрый вечер';
     }
-    function render(){$('#greeting').textContent=`${greetingForHour()}, ${state.name}`;$('#today').textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',weekday:'long'}).format(new Date());renderAccounts();renderMarket();renderProfile();if(currentPage==='detail')renderDetail();if(currentPage==='card')renderCard();if(currentPage==='buy')renderBuy();}
+    const todayFormat = new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',weekday:'long'});
+    function renderAccountsPage(){
+      $('#greeting').textContent = `${greetingForHour()}, ${state.name}`;
+      $('#today').textContent = todayFormat.format(new Date());
+      renderAccounts();
+    }
+    const screenRenderers = {
+      accounts:renderAccountsPage,crypto:renderMarket,profile:renderProfile,
+      detail:renderDetail,card:renderCard,buy:renderBuy,money:renderMoney,
+    };
+    function render(){
+      renderAvatars();
+      if(currentPage!=='money')screenRenderers[currentPage]();
+    }
+    const screenParents = {card:'accounts',money:'accounts',detail:'crypto',buy:'detail'};
+    const screenScroll = new Map();
+    let screenTransition = null;
+    let screenFade = null;
     function navigate(page,target){
+      if(page==='card'&&!state.cards.some(item=>item.id===target))return;
+      screenTransition?.skipTransition();
+      screenTransition = null;
+      screenFade?.cancel();
+      const from = currentPage;
+      const opening = screenParents[page]===from;
+      const returning = screenParents[from]===page;
+      if(opening)screenScroll.set(from,Math.max(0,window.scrollY));
+      const scrollTop = returning ? screenScroll.get(page) ?? 0 : 0;
+      const root = document.documentElement;
+      delete root.dataset.screenMotion;
+      const motion = page!==from&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(motion&&(opening||returning)&&document.startViewTransition&&!$('#modal').open){
+        root.dataset.screenMotion = opening ? 'open' : 'back';
+        const transition = document.startViewTransition(()=>{
+          if(screenTransition===transition)showPage(page,target,scrollTop);
+        });
+        screenTransition = transition;
+        const clear = ()=>{
+          if(screenTransition!==transition)return;
+          screenTransition = null;
+          delete root.dataset.screenMotion;
+        };
+        transition.ready.catch(()=>{});
+        transition.finished.then(clear,clear);
+        return;
+      }
+      showPage(page,target,scrollTop);
+      if(motion)screenFade = $('.main').animate([{opacity:.55},{opacity:1}],{
+        duration:180,easing:'ease-out',
+      });
+    }
+    function showPage(page,target,scrollTop){
       const card = page==='card';
-      if(card&&!state.cards.some(item=>item.id===target))return;
+      const moneyPage = page==='money';
       currentPage = page;
       const detail = page==='detail';
       const buy = page==='buy';
       const crypto = page==='crypto'||detail||buy;
-      const section = crypto ? 'crypto' : card ? 'accounts' : page;
+      const section = crypto ? 'crypto' : card||moneyPage ? 'accounts' : page;
       const main = $('.main');
       main.classList.toggle('coin-view',detail||buy);
-      main.classList.toggle('card-view',card);
-      $('#card-back').hidden = !card;
-      $('#card-title').hidden = !card;
+      main.classList.toggle('card-view',card||moneyPage);
+      $('#card-back').hidden = !card&&!moneyPage;
+      $('#card-title').hidden = !card&&!moneyPage;
       main.classList.toggle('crypto-view',crypto);
       const accounts = page==='accounts';
       main.classList.toggle('accounts-view',accounts);
@@ -1417,7 +1583,7 @@ Apache License
       else main.insertBefore(balance,$('#accounts-page'));
       if(detail&&target){currentCoin=target;period='1Н';}
       if(card)currentCard=target;
-      for(const name of ['accounts','crypto','detail','profile','card','buy']){
+      for(const name of ['accounts','crypto','detail','profile','card','buy','money']){
         $('#'+name+'-page').hidden = page!==name;
       }
       const mobileTabs = $$('.mobile-nav .nav-btn');
@@ -1431,12 +1597,12 @@ Apache License
         if(active)button.setAttribute('aria-current','page');
         else button.removeAttribute('aria-current');
       }
-      render();
+      screenRenderers[page](target);
       if(crypto&&!buy)refreshTickers();
       if(page==='crypto')refreshMarketSparklines();
       if(detail)refreshCandles(coins.find(c=>c.id===currentCoin),period);
       syncChartStream();
-      window.scrollTo({top:0,behavior:'instant'});
+      window.scrollTo({top:scrollTop,behavior:'instant'});
       resetMobileNav();
     }
     function refreshVisibleMarket(){
@@ -1452,7 +1618,15 @@ Apache License
     setInterval(refreshVisibleMarket,30000);
     function toast(message){clearTimeout(toastTimer);$('#toast').textContent=message;$('#toast').classList.add('show');toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),4500);}
     let disposeQrScanner = null;
-    function openModal(title,html){disposeQrScanner?.();$('#modal').classList.remove('chart-modal');$('#modal-title').textContent=title;$('#modal-body').innerHTML=html;if(!$('#modal').open)$('#modal').showModal();}
+    function openModal(title,html,fullScreenQr=false){
+      disposeQrScanner?.();
+      const modal = $('#modal');
+      modal.classList.remove('chart-modal');
+      modal.classList.toggle('qr-flow',fullScreenQr);
+      $('#modal-title').textContent = title;
+      $('#modal-body').innerHTML = html;
+      if(!modal.open)modal.showModal();
+    }
     function closeModal(){disposeQrScanner?.();$('#modal').close();}
     $('#modal').addEventListener('cancel',()=>disposeQrScanner?.());
     window.addEventListener('pagehide',()=>{if(disposeQrScanner)closeModal();});
@@ -1475,170 +1649,218 @@ Apache License
     }
 
     function qrPaymentModal({amount}){
-      openModal('Подтвердить оплату',`
-        <p class="modal-subtitle">СБП · учебная оплата</p>
+      openModal('Оплата по QR',`
         <form id="qr-pay-form" novalidate>
+          <div class="qr-payment-summary">
+            <p>СБП · учебный перевод</p>
+            ${amount===null ? '' : `<div class="total">${rub(amount)}</div>`}
+          </div>
+          ${amount===null ? '<label class="field">Сумма перевода<input id="qr-pay-amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label>' : ''}
           <label class="field">С какой карты списать<select id="qr-pay-card">${cardOptions()}</select></label>
-          ${amount===null ? '<label class="field">Сумма для демо в рублях<input id="qr-pay-amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label>' : `<div class="detail-stats"><span>Сумма из QR</span><strong>${rub(amount)}</strong></div>`}
-          <p class="form-note">Сумма спишется с виртуальной карты.${amount===null ? ' В QR нет суммы, поэтому введи её вручную для демо.' : ''}</p>
-          <div class="form-error" id="form-error" role="alert"></div>
-          <button class="primary full" type="submit">Подтвердить демо-оплату</button>
-        </form>`);
+          <div class="qr-pay-actions">
+            <div class="form-error" id="form-error" role="alert"></div>
+            <button class="primary full" type="submit">Оплатить</button>
+          </div>
+        </form>`,true);
       $('#qr-pay-form').onsubmit = event=>{
         event.preventDefault();
+        if(!$('#modal').open)return;
         const payment = amount ?? parseAmount($('#qr-pay-amount').value);
         const card = state.cards.find(card=>card.id===$('#qr-pay-card').value);
         if(!Number.isFinite(payment))return error('Введите сумму больше нуля, не более двух знаков после запятой.');
         if(!card||card.frozen)return error('Выберите активную карту.');
         if(payment>card.balance)return error('На этой карте недостаточно средств.');
-        event.currentTarget.onsubmit = null;
         card.balance -= payment;
         addTransaction('Оплата по QR',`СБП · ${card.bank} • ${card.last}`,-payment,'qr',card.id);
         commit(`Демо-оплата ${rub(payment)} выполнена`);
       };
     }
 
-    function qrScannerModal(){
-      openModal('Оплатить по QR',`
-        <p class="modal-subtitle">Наведи камеру на QR-код СБП или выбери фото.</p>
-        <p id="qr-status" class="qr-status" role="status">После сканирования проверь сумму и подтверди учебную оплату.</p>
-        <video id="qr-video" class="qr-video" playsinline muted hidden></video>
-        <div class="qr-controls">
-          <button class="primary" id="qr-camera" type="button">Включить камеру</button>
-          <button class="primary secondary" id="qr-choose" type="button">Выбрать фото</button>
-        </div>
-        <input id="qr-file" type="file" accept="image/*" hidden>`);
+    async function qrScannerModal(){
+      openModal('Сканирование QR',`
+        <div class="qr-camera-view">
+          <video id="qr-video" class="qr-video" playsinline muted></video>
+          <div class="qr-scan-frame" aria-hidden="true"></div>
+          <p id="qr-status" class="qr-status" role="status">Открываем камеру…</p>
+        </div>`,true);
       const video = $('#qr-video');
-      const camera = $('#qr-camera');
-      const fileInput = $('#qr-file');
       const status = $('#qr-status');
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d',{willReadFrequently:true});
       let stream = null;
       let timer = null;
-      let attempt = 0;
 
       function stopCamera(){
-        attempt++;
         clearTimeout(timer);
         stream?.getTracks().forEach(track=>track.stop());
         stream = null;
         video.srcObject = null;
-        video.hidden = true;
-        camera.disabled = false;
-        camera.textContent = 'Включить камеру';
       }
-      function isCurrent(id){
-        return id===attempt && video.isConnected && $('#modal').open;
-      }
-      disposeQrScanner = ()=>{
+      const dispose = ()=>{
         stopCamera();
         disposeQrScanner = null;
       };
+      disposeQrScanner = dispose;
 
-      function scan(image,width,height,limit){
-        const scale = Math.min(1,limit/Math.max(width,height));
+      function scanFrame(){
+        if(disposeQrScanner!==dispose)return;
+        if(!stream.active){
+          stopCamera();
+          status.textContent = 'Камера отключилась. Закрой сканер и открой его снова.';
+          return;
+        }
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+        if(video.readyState<2||!width||!height){
+          timer = setTimeout(scanFrame,180);
+          return;
+        }
+        const scale = Math.min(1,800/Math.max(width,height));
         canvas.width = Math.max(1,Math.round(width*scale));
         canvas.height = Math.max(1,Math.round(height*scale));
-        context.drawImage(image,0,0,canvas.width,canvas.height);
+        context.drawImage(video,0,0,canvas.width,canvas.height);
         const frame = context.getImageData(0,0,canvas.width,canvas.height);
-        return jsQR(frame.data,frame.width,frame.height);
-      }
-      function acceptQr(result){
-        const payment = readPaymentQr(result.data);
-        if(!payment){
-          const message = 'Код распознан, но этот формат не поддерживается. Наведи камеру на QR-код СБП в рублях или выбери другое фото.';
-          if(status.textContent!==message)status.textContent = message;
-          return false;
-        }
-        if(!state.cards.some(card=>!card.frozen)){
-          const message = 'QR-код СБП распознан. Для демо-оплаты нужна активная карта.';
-          if(status.textContent!==message)status.textContent = message;
-          return false;
-        }
-        qrPaymentModal(payment);
-        return true;
-      }
-
-      camera.onclick = async()=>{
-        if(stream){
-          stopCamera();
-          status.textContent = 'Камера выключена. Можно включить её снова или выбрать фото.';
-          return;
-        }
-        if(!navigator.mediaDevices?.getUserMedia){
-          status.textContent = 'Камера недоступна. Выбери фото с QR-кодом.';
-          return;
-        }
-        stopCamera();
-        const id = attempt;
-        camera.disabled = true;
-        status.textContent = 'Разреши доступ к камере в браузере.';
-        try{
-          const captured = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
-          if(!isCurrent(id)){
-            captured.getTracks().forEach(track=>track.stop());
+        const result = jsQR(frame.data,frame.width,frame.height);
+        if(result){
+          const payment = readPaymentQr(result.data);
+          if(payment){
+            qrPaymentModal(payment);
             return;
           }
-          stream = captured;
-          video.srcObject = stream;
-          video.hidden = false;
-          await video.play();
-          if(!isCurrent(id))return;
-          status.textContent = 'Помести QR-код в кадр.';
-          camera.textContent = 'Выключить камеру';
-          camera.disabled = false;
-          const scanFrame = ()=>{
-            if(!isCurrent(id))return;
-            if(!stream.active){
-              stopCamera();
-              status.textContent = 'Камера отключилась. Включи её снова или выбери фото.';
-              return;
-            }
-            const result = video.readyState>=2 && scan(video,video.videoWidth,video.videoHeight,800);
-            if(result&&acceptQr(result))return;
-            timer = setTimeout(scanFrame,180);
-          };
-          scanFrame();
-        }catch{
-          if(!isCurrent(id))return;
-          stopCamera();
-          status.textContent = 'Камера недоступна. Проверь разрешение браузера или выбери фото.';
+          const message = 'Этот код не поддерживается. Наведи камеру на QR-код СБП в рублях.';
+          if(status.textContent!==message)status.textContent = message;
         }
-      };
-      $('#qr-choose').onclick = ()=>fileInput.click();
-      fileInput.onchange = async()=>{
-        const file = fileInput.files[0];
-        if(!file)return;
-        fileInput.value = '';
+        timer = setTimeout(scanFrame,180);
+      }
+
+      if(!navigator.mediaDevices?.getUserMedia){
+        status.textContent = 'Камера недоступна. Открой Patrn в браузере с доступом к камере.';
+        return;
+      }
+      try{
+        const captured = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+        if(disposeQrScanner!==dispose){
+          captured.getTracks().forEach(track=>track.stop());
+          return;
+        }
+        stream = captured;
+        video.srcObject = stream;
+        await video.play();
+        if(disposeQrScanner!==dispose)return;
+        status.textContent = 'Помести QR-код СБП в рамку.';
+        scanFrame();
+      }catch{
+        if(disposeQrScanner!==dispose)return;
         stopCamera();
-        const id = attempt;
-        status.textContent = 'Ищу QR-код на фото…';
-        const source = URL.createObjectURL(file);
-        try{
-          const image = new Image();
-          image.src = source;
-          await image.decode();
-          if(!isCurrent(id))return;
-          const result = scan(image,image.naturalWidth,image.naturalHeight,1600);
-          if(result)acceptQr(result);
-          else status.textContent = 'QR-код не найден. Попробуй фото, на котором виден весь код.';
-        }catch{
-          if(isCurrent(id))status.textContent = 'Не удалось открыть фото. Попробуй PNG или JPEG.';
-        }finally{
-          URL.revokeObjectURL(source);
-        }
-      };
+        status.textContent = 'Камера недоступна. Проверь разрешение на доступ к камере и открой сканер снова.';
+      }
     }
 
-    function transferModal(mode){const self=mode==='self',topup=mode==='topup';if(!state.cards.some(c=>!c.frozen)){toast('Сначала разморозьте одну из карт.');return;}if(self&&state.cards.filter(c=>!c.frozen).length<2){toast('Для перевода себе нужны две активные карты.');return;}openModal(topup?'Пополнить карту':self?'Перевести себе':'Перевести деньги',`<p class="modal-subtitle">${topup?'Пополнение виртуальными деньгами':self?'Между вашими картами · без комиссии':'Учебный перевод · без комиссии'}</p><form id="money-form" novalidate><label class="field">${topup?'Куда зачислить':'Откуда списать'}<select id="from-card">${cardOptions()}</select></label>${self?`<label class="field">Куда перевести<select id="to-card"></select></label>`:topup?'':`<label class="field">Имя получателя<input id="recipient" maxlength="50" placeholder="Например, Анна" autocomplete="off" required></label>`}<label class="field">Сумма в рублях<input id="amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label><div class="form-note">${topup?'Добавьте до 1 000 000 ₽ за раз на демо-счёт.':self?'Общий баланс не изменится: деньги переместятся между картами.':'Перевод демонстрационный. Сумма спишется с вашей виртуальной карты.'}</div><div class="form-error" id="form-error" role="alert"></div><button class="primary full" type="submit">${topup?'Пополнить':self?'Перевести себе':'Перевести'}</button></form>`);if(self){const update=()=>{$('#to-card').innerHTML=cardOptions($('#from-card').value);};$('#from-card').addEventListener('change',update);update();}$('#money-form').onsubmit=e=>{e.preventDefault();const amount=parseAmount($('#amount').value),from=state.cards.find(c=>c.id===$('#from-card').value);if(!Number.isFinite(amount))return error('Введите сумму больше нуля, не более двух знаков после запятой.');if(!from||from.frozen)return error('Выберите активную карту.');if(amount>(topup?100000000:1000000000))return error(topup?'За раз можно пополнить не более 1 000 000 ₽.':'Максимальная сумма перевода — 10 000 000 ₽.');if(topup){if(!Number.isSafeInteger(from.balance+amount))return error('Достигнут лимит баланса.');from.balance+=amount;addTransaction('Пополнение счёта',`${from.bank} • ${from.last}`,amount,'plus',from.id);commit(`На карту зачислено ${rub(amount)}`);return;}if(amount>from.balance)return error('На этой карте недостаточно средств.');if(self){const to=state.cards.find(c=>c.id===$('#to-card').value);if(!to||to.id===from.id||to.frozen)return error('Выберите другую активную карту.');if(!Number.isSafeInteger(to.balance+amount))return error('Достигнут лимит баланса карты получателя.');from.balance-=amount;to.balance+=amount;addTransaction(`Перевод себе · ${rub(amount)}`,`${from.bank} → ${to.bank}`,0,'swap');commit('Деньги переведены между вашими картами');}else{const recipient=$('#recipient').value.trim();if(recipient.length<2)return error('Укажите имя получателя: минимум 2 символа.');from.balance-=amount;addTransaction(`Перевод: ${recipient}`,`${from.bank} • ${from.last}`,-amount,'arrow',from.id);commit(`Перевод ${rub(amount)} выполнен`);}};}
+    function openMoneyPage(mode){
+      const count = state.cards.filter(card=>!card.frozen).length;
+      if(!count){toast('Сначала разморозьте одну из карт.');return;}
+      if(mode==='self'&&count<2){toast('Для перевода себе нужны две активные карты.');return;}
+      navigate('money',mode);
+    }
+
+    function renderMoney(mode){
+      const self = mode==='self';
+      const topup = mode==='topup';
+      const cards = state.cards.filter(card=>!card.frozen);
+      const title = topup ? 'Пополнить карту' : self ? 'Между своими' : 'Перевести деньги';
+      const subtitle = topup ? 'Пополнение виртуальными деньгами' : self ? 'Между вашими картами · без комиссии' : 'Учебный перевод · без комиссии';
+      const note = topup ? 'Добавьте до 1 000 000 ₽ за раз на демо-счёт.' : self ? 'Общий баланс не изменится: деньги переместятся между картами.' : 'Перевод демонстрационный. Сумма спишется с вашей виртуальной карты.';
+      $('#card-title').textContent = title;
+      $('#money-page').innerHTML = `
+        <p class="modal-subtitle">${subtitle}</p>
+        <form id="money-form" class="money-form" novalidate>
+          <fieldset>
+            <legend>${topup?'Куда зачислить':'Откуда списать'}</legend>
+            <div class="card-choices">${cardChoices(cards,'from-card',cards[0]?.id,money)}</div>
+          </fieldset>
+          ${self ? `<fieldset>
+            <legend>Куда перевести</legend>
+            <div class="card-choices" id="money-destinations"></div>
+          </fieldset>` : topup ? '' : '<label class="field">Имя получателя<input name="recipient" maxlength="50" placeholder="Например, Анна" autocomplete="off" required></label>'}
+          <label class="field">Сумма в рублях<input name="amount" inputmode="decimal" placeholder="0,00 ₽" autocomplete="off" required></label>
+          <p class="form-note">${note}</p>
+          <div class="form-error" id="money-error" role="alert"></div>
+          <button class="primary full" type="submit">${topup?'Пополнить':'Перевести'}</button>
+        </form>`;
+      const form = $('#money-form');
+      const source = form.elements['from-card'];
+      const submit = form.querySelector('[type="submit"]');
+      const report = message=>{$('#money-error').textContent = message;};
+      if(self){
+        const destinations = $('#money-destinations');
+        const update = ()=>{
+          const selected = destinations.querySelector(':checked')?.value;
+          const eligible = cards.filter(card=>card.id!==source.value);
+          const next = eligible.find(card=>card.id===selected) ?? eligible[0];
+          destinations.innerHTML = cardChoices(eligible,'to-card',next?.id,money);
+        };
+        form.addEventListener('change',event=>{
+          if(event.target.name==='from-card')update();
+        });
+        update();
+      }
+      const finish = message=>{
+        submit.disabled = true;
+        save();
+        navigate('accounts');
+        toast(message);
+      };
+      form.onsubmit = event=>{
+        event.preventDefault();
+        if(currentPage!=='money'||submit.disabled)return;
+        const amount = parseAmount(form.elements.amount.value);
+        const from = state.cards.find(card=>card.id===source.value&&!card.frozen);
+        if(!Number.isFinite(amount))return report('Введите сумму больше нуля, не более двух знаков после запятой.');
+        if(!from)return report('Выберите активную карту.');
+        if(amount>(topup?100000000:1000000000))return report(topup?'За раз можно пополнить не более 1 000 000 ₽.':'Максимальная сумма перевода — 10 000 000 ₽.');
+        if(topup){
+          if(!Number.isSafeInteger(from.balance+amount))return report('Достигнут лимит баланса.');
+          from.balance += amount;
+          addTransaction('Пополнение счёта',`${from.bank} • ${from.last}`,amount,'plus',from.id);
+          return finish(`На карту зачислено ${rub(amount)}`);
+        }
+        if(amount>from.balance)return report('На этой карте недостаточно средств.');
+        if(self){
+          const to = state.cards.find(card=>card.id===form.elements['to-card'].value&&!card.frozen);
+          if(!to||to===from)return report('Выберите другую активную карту.');
+          if(!Number.isSafeInteger(to.balance+amount))return report('Достигнут лимит баланса карты получателя.');
+          from.balance -= amount;
+          to.balance += amount;
+          addTransaction(`Перевод себе · ${rub(amount)}`,`${from.bank} → ${to.bank}`,0,'swap');
+          return finish('Деньги переведены между вашими картами');
+        }
+        const recipient = form.elements.recipient.value.trim();
+        if(recipient.length<2)return report('Укажите имя получателя: минимум 2 символа.');
+        from.balance -= amount;
+        addTransaction(`Перевод: ${recipient}`,`${from.bank} • ${from.last}`,-amount,'arrow',from.id);
+        finish(`Перевод ${rub(amount)} выполнен`);
+      };
+    }
     const BUY_FEE_PERCENT=1;
-    function buyQuote(value,unitCents){
-      const amount=parseAmount(value);
+    function buyQuote(value,unitCents,byQuantity=false){
+      const text=String(value).trim();
+      const units=byQuantity&&/^(?:\d+(?:[.,]\d{1,8})?|[.,]\d{1,8})$/.test(text)
+        ? Number(text.replace(',','.'))
+        : NaN;
+      if(byQuantity&&!(units>0))return null;
+      const amount=byQuantity ? Math.round(units*unitCents) : parseAmount(text);
       if(!Number.isSafeInteger(amount))return null;
       const fee=Math.round(amount*BUY_FEE_PERCENT/100),total=amount+fee;
       if(!Number.isSafeInteger(total))return null;
-      return {amount,fee,total,quantity:amount/unitCents};
+      return {amount,fee,total,quantity:byQuantity ? units : amount/unitCents};
+    }
+
+    function cardChoices(cards,name,selected=cards[0]?.id,formatBalance=balance=>state.hide?'••• •••':rub(balance)){
+      return cards.map(card=>`<label class="card-choice">
+        <img class="card-thumbnail" src="${cardImage(card)}" alt="" width="64" height="41">
+        <span><strong>${esc(card.bank)} • ${card.last}</strong><small>${formatBalance(card.balance)}</small></span>
+        <input type="radio" name="${name}" value="${esc(card.id)}" ${card.id===selected?'checked':''}>
+      </label>`).join('');
     }
 
     function renderBuy(){
@@ -1650,22 +1872,21 @@ Apache License
         page.innerHTML='<p class="panel muted">Для покупки нужна активная карта.</p>';
         return;
       }
-      const displayBalance=card=>state.hide?'••• •••':rub(card.balance);
       page.innerHTML=`
         <p class="modal-subtitle">Демо-покупка · 1 ${coin.symbol} ≈ ${rub(Math.round(unitCents))}</p>
         <form id="buy-form" class="buy-form" novalidate>
           <fieldset>
             <legend>Списать с карты</legend>
-            <div class="buy-cards">
-              ${cards.map((card,index)=>`<label class="buy-card">
-                <img class="card-thumbnail" src="${cardImage(card)}" alt="" width="64" height="41">
-                <span><strong>${esc(card.bank)} • ${card.last}</strong><small>${displayBalance(card)}</small></span>
-                <input type="radio" name="buy-card" value="${esc(card.id)}" ${index===0?'checked':''}>
-              </label>`).join('')}
+            <div class="card-choices">
+              ${cardChoices(cards,'buy-card')}
             </div>
           </fieldset>
           <div>
-            <label class="field" for="buy-amount">Сумма покупки, ₽
+            <div class="segmented buy-unit-switch" role="group" aria-label="В чём указать покупку">
+              <button type="button" data-buy-unit="rub" aria-pressed="true">В рублях</button>
+              <button type="button" data-buy-unit="coin" aria-pressed="false">В ${coin.symbol}</button>
+            </div>
+            <label class="field" for="buy-amount"><span id="buy-amount-label">Сумма покупки, ₽</span>
               <input id="buy-amount" name="amount" type="text" inputmode="decimal" enterkeyhint="done" placeholder="0,00" autocomplete="off" required>
             </label>
             <div class="amount-buttons">
@@ -1677,13 +1898,18 @@ Apache License
             <div class="between"><span class="muted">Комиссия Patrn · ${BUY_FEE_PERCENT}%</span><strong id="buy-fee"></strong></div>
             <div class="between buy-total"><span>Итого спишется</span><strong id="buy-total"></strong></div>
           </div>
-          <div class="form-note">Минимальная покупка — 100 ₽. Сделка проходит по фиксированной демо-цене с виртуальными средствами.</div>
+          <div class="form-note">Можно купить часть монеты. Минимальная сумма покупки — 100 ₽. Используются виртуальные средства.</div>
           <div class="form-error" id="buy-error" role="alert"></div>
           <button class="primary full" type="submit">Купить ${coin.symbol}</button>
         </form>`;
       const form=$('#buy-form'),input=$('#buy-amount'),formError=$('#buy-error');
+      const submit=form.querySelector('[type="submit"]');
+      const unitButtons=[...form.querySelectorAll('[data-buy-unit]')];
+      const drafts={rub:'',coin:''};
+      let unit='rub';
+      const getQuote=()=>buyQuote(input.value,unitCents,unit==='coin');
       const estimate=()=>{
-        const quote=buyQuote(input.value,unitCents);
+        const quote=getQuote();
         $('#buy-quantity').textContent=`${quantity(quote?.quantity??0)} ${coin.symbol}`;
         $('#buy-fee').textContent=rub(quote?.fee??0);
         $('#buy-total').textContent=rub(quote?.total??0);
@@ -1691,20 +1917,34 @@ Apache License
       };
       input.addEventListener('input',estimate);
       form.addEventListener('change',estimate);
+      for(const button of unitButtons)button.onclick=()=>{
+        const next=button.dataset.buyUnit;
+        if(next===unit)return;
+        drafts[unit]=input.value;
+        unit=next;
+        const byQuantity=unit==='coin';
+        input.value=drafts[unit];
+        input.placeholder=byQuantity?'0,05':'0,00';
+        $('#buy-amount-label').textContent=byQuantity?`Количество, ${coin.symbol}`:'Сумма покупки, ₽';
+        form.querySelector('.amount-buttons').hidden=byQuantity;
+        for(const option of unitButtons)option.setAttribute('aria-pressed',String(option===button));
+        estimate();
+      };
       for(const button of form.querySelectorAll('[data-buy-amount]')){
         button.onclick=()=>{input.value=button.dataset.buyAmount;estimate();};
       }
       estimate();
       form.onsubmit=event=>{
         event.preventDefault();
-        if(currentPage!=='buy')return;
+        if(currentPage!=='buy'||submit.disabled)return;
         const selected=form.elements['buy-card'].value;
         const card=state.cards.find(item=>item.id===selected&&!item.frozen);
-        const quote=buyQuote(input.value,unitCents);
+        const quote=getQuote();
         if(!card){formError.textContent='Выберите активную карту.';return;}
-        if(!quote){formError.textContent='Введите корректную сумму в рублях.';return;}
+        if(!quote){formError.textContent=unit==='coin'?'Введите положительное количество с точностью до 8 знаков после запятой.':'Введите корректную сумму в рублях.';return;}
         if(quote.amount<10000){formError.textContent='Минимальная покупка — 100 ₽.';return;}
         if(quote.total>card.balance){formError.textContent='На карте недостаточно средств с учётом комиссии.';return;}
+        submit.disabled=true;
         card.balance-=quote.total;
         state.holdings[coin.id]=(state.holdings[coin.id]||0)+quote.quantity;
         const acquired=`${quantity(quote.quantity)} ${coin.symbol}`;
@@ -1771,32 +2011,50 @@ Apache License
 
     function setupInlineChart(stage,coin,selectedPeriod,data){
       const plot=stage.querySelector('svg'),axis=stage.querySelector('.advanced-price-axis'),clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+      const timeAxis=stage.nextElementSibling;
+      const readout=stage.querySelector('.candle-readout'),cross=stage.querySelector('.candle-crosshair');
       let scale=1,x=0,touches=new Map(),mouse=null,panIntent=false,readoutX=null;
+      let frame=0,needsPlot=false,readoutCandle=null;
       const read=e=>new Map([...e.touches].map(t=>[t.identifier,{x:t.clientX,y:t.clientY}]));
       const metric=points=>{const [a,b]=[...points.values()];return {distance:Math.hypot(b.x-a.x,b.y-a.y),cx:(a.x+b.x)/2};};
+      function scheduleFrame(){
+        if(frame)return;
+        frame=requestAnimationFrame(()=>{
+          frame=0;
+          if(!stage.isConnected||currentPage!=='detail')return;
+          if(needsPlot){
+            needsPlot=false;
+            paint();
+          }
+          if(readoutX!==null)paintReadout();
+        });
+      }
+      function schedulePlot(){
+        needsPlot=true;
+        scheduleFrame();
+      }
       function paint(){
-        x=clamp(x,0,800-800/scale);
         const start=x/800*data.length,count=data.length/scale;
         const chart=chartMarkup(coin,data,start,count,state.chartType);
         plot.innerHTML=chart.svg;
         axis.innerHTML=chart.axis;
         stage.dataset.start=String(start);
         stage.dataset.count=String(count);
-        if(readoutX!==null)showReadout(readoutX);
-        stage.nextElementSibling.innerHTML=chartAxis(selectedPeriod,data,start,count);
-        stage.dataset.zoom=String(scale);stage.classList.toggle('zoomed',scale>1.001);
+        timeAxis.innerHTML=chartAxis(selectedPeriod,data,start,count);
       }
       function zoom(next,clientX){
         const bounds=plot.getBoundingClientRect();
         const anchor=clientX===undefined?.5:clamp((clientX-bounds.left)/bounds.width,0,1);
         const position=x+anchor*800/scale;
         scale=clamp(next,1,8);
-        x=position-anchor*800/scale;
-        paint();
+        x=clamp(position-anchor*800/scale,0,800-800/scale);
+        stage.dataset.zoom=String(scale);
+        stage.classList.toggle('zoomed',scale>1.001);
+        schedulePlot();
       }
       function pan(dx){
-        x-=dx/plot.getBoundingClientRect().width*800/scale;
-        paint();
+        x=clamp(x-dx/plot.getBoundingClientRect().width*800/scale,0,800-800/scale);
+        schedulePlot();
       }
       stage.addEventListener('touchstart',e=>{touches=read(e);panIntent=false;if(e.touches.length>=2&&e.cancelable)e.preventDefault();},{passive:false});
       stage.addEventListener('touchmove',e=>{const next=read(e);if(next.size>=2&&touches.size>=2){if(e.cancelable)e.preventDefault();const old=metric(touches),now=metric(next);pan(now.cx-old.cx);if(old.distance>0)zoom(scale*now.distance/old.distance,now.cx);}else if(next.size===1&&touches.size===1&&scale>1.001){const current=[...next.values()][0],previous=touches.get([...next.keys()][0]);if(previous){const dx=current.x-previous.x,dy=current.y-previous.y;if(panIntent||Math.abs(dx)>Math.abs(dy)*1.4&&Math.abs(dx)>2){panIntent=true;if(e.cancelable)e.preventDefault();pan(dx);}}}touches=next;},{passive:false});
@@ -1807,17 +2065,32 @@ Apache License
       stage.addEventListener('pointermove',e=>{if(!mouse||mouse.id!==e.pointerId)return;pan(e.clientX-mouse.x);mouse.x=e.clientX;});
       for(const event of ['pointerup','pointercancel','lostpointercapture'])stage.addEventListener(event,()=>{mouse=null;});
       stage.addEventListener('keydown',e=>{if(['+','=','-','0','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))e.preventDefault();switch(e.key){case '+':case '=':zoom(scale*1.5);break;case '-':zoom(scale/1.5);break;case '0':zoom(1);break;case 'ArrowLeft':pan(30);break;case 'ArrowRight':pan(-30);break;}});
-      function clearReadout(){readoutX=null;stage.querySelector('.candle-readout').hidden=true;stage.querySelector('.candle-crosshair').hidden=true;}
-      function showReadout(clientX){readoutX=clientX;const b=plot.getBoundingClientRect(),start=Number(stage.dataset.start)||0,count=Number(stage.dataset.count)||data.length,i=clamp(Math.floor(start+clamp((clientX-b.left)/b.width,0,1)*count),0,data.length-1),d=data[i],output=stage.querySelector('.candle-readout'),cross=stage.querySelector('.candle-crosshair');output.dataset.candle=String(i);output.innerHTML=`<strong>${coin.symbol} · ${new Date(d.time).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</strong><div>${[['Откр.',d.open],['Макс.',d.high],['Мин.',d.low],['Закр.',d.close]].map(([label,value])=>`<span>${label}<b>${chartScale(value,coin,data[0].open)}</b></span>`).join('')}</div><small>Объём: ${number(d.volume,d.volume<10?2:0)} ${coin.symbol}</small>`;output.hidden=false;cross.style.left=`${clamp((i+.5-start)/count,0,1)*b.width}px`;cross.hidden=false;}
+      function clearReadout(){readoutX=null;readout.hidden=true;cross.hidden=true;}
+      function showReadout(clientX){readoutX=clientX;scheduleFrame();}
+      function paintReadout(){
+        const bounds=plot.getBoundingClientRect(),width=plot.clientWidth;
+        const start=Number(stage.dataset.start)||0,count=Number(stage.dataset.count)||data.length;
+        const i=clamp(Math.floor(start+clamp((readoutX-bounds.left)/bounds.width,0,1)*count),0,data.length-1);
+        const candle=data[i];
+        if(readoutCandle!==candle){
+          readoutCandle=candle;
+          readout.dataset.candle=String(i);
+          readout.innerHTML=`<strong>${coin.symbol} · ${operationTimeFormat.format(candle.time)}</strong><div>${[['Откр.',candle.open],['Макс.',candle.high],['Мин.',candle.low],['Закр.',candle.close]].map(([label,value])=>`<span>${label}<b>${chartScale(value,coin,data[0].open)}</b></span>`).join('')}</div><small>Объём: ${number(candle.volume,candle.volume<10?2:0)} ${coin.symbol}</small>`;
+        }
+        readout.hidden=false;
+        cross.style.left=`${clamp((i+.5-start)/count,0,1)*width}px`;
+        cross.hidden=false;
+      }
       stage.addEventListener('pointermove',e=>{if(e.pointerType==='mouse')showReadout(e.clientX);});
       stage.addEventListener('pointerleave',clearReadout);
       stage.addEventListener('click',e=>showReadout(e.clientX));
       stage.addEventListener('touchstart',e=>{if(e.touches.length>1)clearReadout();},{passive:true});
       function update(next){
         data=next;
-        paint();
+        readoutCandle=null;
+        schedulePlot();
       }
-      update(data);
+      paint();
       return update;
     }
     function renderCard(){
@@ -1918,17 +2191,19 @@ Apache License
     }
 
     function addCardModal(){if(state.cards.length>=8){toast('В демоверсии можно добавить до 8 карт.');return;}openModal('Добавить карту',`<p class="modal-subtitle">Создайте ещё одну виртуальную карту</p><form id="add-form"><label class="field">Банк<select id="bank-name"><option>Сбер</option><option>Альфа-Банк</option><option>ВТБ</option></select></label><label class="field">Стиль карты<select id="card-style"><option value="sber">Сбер · зелёная</option><option value="alfa">Альфа-Банк · красная</option><option value="vtb">ВТБ · синяя</option></select></label><div class="form-note">Новая карта появится с нулевым балансом. Пополните её виртуальными деньгами или переведите средства с другой карты.</div><button class="primary full" type="submit">Добавить карту</button></form>`);$('#add-form').onsubmit=e=>{e.preventDefault();state.cards.push({id:'card-'+Date.now(),bank:$('#bank-name').value,type:'Дебетовая',style:$('#card-style').value,last:String(Math.floor(1000+Math.random()*9000)),balance:0,frozen:false});commit('Новая демо-карта добавлена');};}
-    function renderProfile(){
-      $('#profile-display-name').textContent = state.name;
-      $('#profile-balance').textContent = money(accountBalance());
+    function renderAvatars(){
       const hasPhoto = Boolean(state.avatar);
       for(const photo of $$('[data-avatar-image]')){
         photo.hidden = !hasPhoto;
-        if(hasPhoto)photo.setAttribute('src',state.avatar);
+        if(hasPhoto){if(photo.getAttribute('src')!==state.avatar)photo.setAttribute('src',state.avatar);}
         else photo.removeAttribute('src');
       }
       for(const placeholder of $$('[data-avatar-placeholder]'))placeholder.toggleAttribute('hidden',hasPhoto);
       $('#profile-photo-label').textContent = hasPhoto ? 'Изменить фото' : 'Добавить фото';
+    }
+    function renderProfile(){
+      $('#profile-display-name').textContent = state.name;
+      $('#profile-balance').textContent = money(accountBalance());
       for(const button of $$('#profile-page [data-chart-mode]')){
         const active = button.dataset.chartMode===state.chartMode;
         button.classList.toggle('active',active);
@@ -1969,7 +2244,7 @@ Apache License
         if(state!==profile)return;
         state.avatar = canvas.toDataURL('image/jpeg',.85);
         save();
-        renderProfile();
+        renderAvatars();
       }catch{
         status.textContent = 'Не удалось открыть фото. Попробуйте JPG или PNG.';
         status.hidden = false;
@@ -1984,7 +2259,7 @@ Apache License
       save();
       renderProfile();
     }
-    function profileModal(){openModal('Ваш профиль',`<form id="profile-form" novalidate><label class="field">Как к вам обращаться<input id="profile-name" value="${esc(state.name)}" maxlength="30" required autocomplete="given-name"></label><div class="form-error" id="form-error" role="alert"></div><button class="primary full" type="submit">Сохранить</button></form><div class="profile-footer"><p class="small muted">Начать знакомство заново с исходными балансами и картами.</p><button class="text-btn" id="reset-demo">Сбросить демоданные</button></div>`);$('#profile-form').onsubmit=e=>{e.preventDefault();const name=$('#profile-name').value.trim();if(name.length<2)return error('Введите имя: от 2 до 30 символов.');state.name=name;commit('Профиль обновлён');};$('#reset-demo').onclick=()=>{openModal('Сбросить демоданные?',`<p class="modal-text">Все добавленные карты, сделки и переводы будут удалены. Балансы и портфель вернутся к исходным значениям.</p><div class="trade-buttons"><button class="primary secondary" id="cancel-reset">Отмена</button><button class="primary" id="confirm-reset">Сбросить</button></div>`);$('#cancel-reset').onclick=profileModal;$('#confirm-reset').onclick=()=>{state=initialState();historyExpanded=false;favoritesOnly=false;sortDirection=0;save();closeModal();navigate('accounts');toast('Демоданные восстановлены');};};}
+    function profileModal(){openModal('Ваш профиль',`<form id="profile-form" novalidate><label class="field">Как к вам обращаться<input id="profile-name" value="${esc(state.name)}" maxlength="30" required autocomplete="given-name"></label><div class="form-error" id="form-error" role="alert"></div><button class="primary full" type="submit">Сохранить</button></form><div class="profile-footer"><p class="small muted">Начать знакомство заново с исходными балансами и картами.</p><button class="text-btn" id="reset-demo">Сбросить демоданные</button></div>`);$('#profile-form').onsubmit=e=>{e.preventDefault();const name=$('#profile-name').value.trim();if(name.length<2)return error('Введите имя: от 2 до 30 символов.');state.name=name;commit('Профиль обновлён');};$('#reset-demo').onclick=()=>{openModal('Сбросить демоданные?',`<p class="modal-text">Все добавленные карты, сделки и переводы будут удалены. Балансы и портфель вернутся к исходным значениям.</p><div class="trade-buttons"><button class="primary secondary" id="cancel-reset">Отмена</button><button class="primary" id="confirm-reset">Сбросить</button></div>`);$('#cancel-reset').onclick=profileModal;$('#confirm-reset').onclick=()=>{state=initialState();historyExpanded=false;favoritesOnly=false;sortDirection=0;save();renderAvatars();closeModal();navigate('accounts');toast('Демоданные восстановлены');};};}
     function helpModal(){openModal('С Patrn всё проще',`<div class="notice"><strong>01 / Соберите счета</strong><p>На экране «Счета» видны все карты и их общий баланс. Переводите деньги себе или пополняйте демо-карты.</p></div><div class="notice"><strong>02 / Выберите монету</strong><p>В Crypto найдите монету, откройте её график и описание. Звёздочка добавляет монету в избранное.</p></div><div class="notice"><strong>03 / Попробуйте сделку</strong><p>Нажмите «Купить», выберите карту и укажите сумму в рублях. Монеты появятся в портфеле, а сделка — в истории. Продать их можно на том же экране.</p></div><p class="modal-text">Patrn — интерактивный прототип. Банковские карты и сделки демонстрационные. Рыночные котировки и графики поступают с Bybit. На открытом графике цена обновляется по потоку сделок. Изменения сохраняются только в этом браузере. Демо-курс: 1 $ = ${number(USD_RATE)} ₽.</p><button class="primary full" id="help-done">Понятно, попробую</button>`);$('#help-done').onclick=closeModal;}
     const navScrollState={lastY:0,direction:0,distance:0,ticking:false};
     function resetMobileNav(){const nav=$('.mobile-nav');nav.classList.remove('nav-compact');navScrollState.lastY=Math.max(0,window.scrollY);navScrollState.direction=0;navScrollState.distance=0;}
@@ -2013,7 +2288,7 @@ Apache License
     function moveCoinSwipe(e,cx,cy){if(!coinSwipe)return;coinSwipe.lastX=cx;coinSwipe.lastY=cy;const dx=cx-coinSwipe.x,dy=cy-coinSwipe.y;if(dx>12&&dx>Math.abs(dy)*1.6&&e.cancelable)e.preventDefault();}
     function finishCoinSwipe(){const swipe=coinSwipe;coinSwipe=null;if(!swipe||currentPage!=='detail'||$('#modal').open)return;const dx=swipe.lastX-swipe.x,dy=swipe.lastY-swipe.y;if(dx>=Math.max(64,Math.min(100,innerWidth*.18))&&dx>Math.abs(dy)*1.6&&performance.now()-swipe.time<1200)navigate('crypto');}
     document.addEventListener('touchstart',e=>{if(e.touches.length!==1){coinSwipe=null;return;}const t=e.touches[0];coinSwipe=beginCoinSwipe(e.target,t.identifier,t.clientX,t.clientY);},{passive:true,capture:true});
-    document.addEventListener('touchmove',e=>{if(!coinSwipe)return;if(e.touches.length!==1){coinSwipe=null;return;}const t=[...e.touches].find(t=>t.identifier===coinSwipe.id);if(t)moveCoinSwipe(e,t.clientX,t.clientY);},{passive:false});
+    document.addEventListener('touchmove',e=>{if(!coinSwipe)return;if(e.touches.length!==1){coinSwipe=null;return;}const t=[...e.touches].find(t=>t.identifier===coinSwipe.id);if(t){coinSwipe.lastX=t.clientX;coinSwipe.lastY=t.clientY;}},{passive:true});
     document.addEventListener('touchend',e=>{if(e.touches.length){coinSwipe=null;return;}if(coinSwipe){const t=[...e.changedTouches].find(t=>t.identifier===coinSwipe.id);if(t){coinSwipe.lastX=t.clientX;coinSwipe.lastY=t.clientY;}}finishCoinSwipe();},{passive:true});
     document.addEventListener('touchcancel',()=>{coinSwipe=null;},{passive:true});
     document.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button===0)coinSwipe=beginCoinSwipe(e.target,e.pointerId,e.clientX,e.clientY);});
@@ -2024,7 +2299,7 @@ Apache License
       if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&typeof button.animate==='function')button.animate([{transform:'scale(.965)'},{transform:'scale(1)'}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)'});
       if(trusted&&typeof navigator.vibrate==='function'){try{navigator.vibrate(12);}catch{}}
     }
-    document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){const row=e.target.closest('#market-body tr[data-coin]');if(row)navigate('detail',row.dataset.coin);return;}if(b.classList.contains('quick-action'))tapFeedback(b,e.isTrusted);if(b.dataset.currency){state.currency=b.dataset.currency;save();render();}else if(b.dataset.page)navigate(b.dataset.page);else if(b.dataset.coin)navigate('detail',b.dataset.coin);else if(b.dataset.card)navigate('card',b.dataset.card);else if(b.dataset.favorite){const id=b.dataset.favorite;state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];save();renderMarket();if(currentPage==='detail')renderDetail();}else if(b.dataset.chartMode)setChartMode(b.dataset.chartMode);else if(b.dataset.period){period=b.dataset.period;renderDetail();refreshCandles(coins.find(c=>c.id===currentCoin),period);syncChartStream();}else if(b.dataset.trade)tradeModal(b.dataset.trade);else if(b.dataset.action){switch(b.dataset.action){case 'visibility':state.hide=!state.hide;save();render();break;case 'transfer':case 'self':case 'topup':transferModal(b.dataset.action);break;case 'add-card':addCardModal();break;case 'qr-pay':qrScannerModal();break;case 'profile':profileModal();break;case 'help':helpModal();break;case 'history':historyExpanded=!historyExpanded;renderAccounts();break;case 'favorites-filter':favoritesOnly=!favoritesOnly;if(currentPage==='detail')navigate('crypto');else renderMarket();break;case 'notifications':openModal('Уведомления',`<div class="notice"><strong>Добро пожаловать в Patrn</strong><p>Ваше учебное пространство готово. Все карты и монеты доступны для знакомства.</p></div><div class="notice"><strong>Данные остаются с вами</strong><p>История и балансы сохраняются в этом браузере. Управлять демоданными можно в профиле.</p></div>`);break;}}});
+    document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){const row=e.target.closest('#market-body tr[data-coin]');if(row)navigate('detail',row.dataset.coin);return;}if(b.classList.contains('quick-action'))tapFeedback(b,e.isTrusted);if(b.dataset.currency){state.currency=b.dataset.currency;save();render();}else if(b.dataset.page)navigate(b.dataset.page);else if(b.dataset.coin)navigate('detail',b.dataset.coin);else if(b.dataset.card)navigate('card',b.dataset.card);else if(b.dataset.favorite){const id=b.dataset.favorite;state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];save();if(currentPage==='detail')renderDetailFavorite();else renderMarket();}else if(b.dataset.chartMode)setChartMode(b.dataset.chartMode);else if(b.dataset.period){period=b.dataset.period;renderDetail();refreshCandles(coins.find(c=>c.id===currentCoin),period);syncChartStream();}else if(b.dataset.trade)tradeModal(b.dataset.trade);else if(b.dataset.action){switch(b.dataset.action){case 'visibility':state.hide=!state.hide;save();render();break;case 'transfer':case 'self':case 'topup':openMoneyPage(b.dataset.action);break;case 'add-card':addCardModal();break;case 'qr-pay':qrScannerModal();break;case 'profile':profileModal();break;case 'help':helpModal();break;case 'history':historyExpanded=!historyExpanded;renderAccounts();break;case 'favorites-filter':favoritesOnly=!favoritesOnly;if(currentPage==='detail')navigate('crypto');else renderMarket();break;case 'notifications':openModal('Уведомления',`<div class="notice"><strong>Добро пожаловать в Patrn</strong><p>Ваше учебное пространство готово. Все карты и монеты доступны для знакомства.</p></div><div class="notice"><strong>Данные остаются с вами</strong><p>История и балансы сохраняются в этом браузере. Управлять демоданными можно в профиле.</p></div>`);break;}}});
     const LOCK_STORE = STORE+'-lock-v1';
     const encoder = new TextEncoder();
     const entry = $('#entry-lock');
